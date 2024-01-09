@@ -2,7 +2,7 @@ package net.turniptales.discord.services;
 
 import lombok.extern.log4j.Log4j2;
 import net.dv8tion.jda.api.entities.Activity;
-import net.turniptales.discord.TurniptalesDiscord;
+import net.turniptales.discord.TurnipTalesDiscord;
 import org.springframework.stereotype.Component;
 
 import java.util.Timer;
@@ -26,7 +26,7 @@ public class ActivitySyncService {
                 log.info("Activity synchronising: started");
 
                 Activity activity = playing("auf TurnipTales.net");
-                TurniptalesDiscord.TURNIPTALES_BOT.getPresence().setActivity(activity);
+                TurnipTalesDiscord.TURNIPTALES_BOT.getPresence().setActivity(activity);
 
                 log.info("Activity synchronising: finished in {}ms", currentTimeMillis() - startTime);
             }

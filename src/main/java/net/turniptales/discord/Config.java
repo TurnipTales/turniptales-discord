@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
-import static net.turniptales.discord.TurniptalesDiscord.TURNIPTALES_BOT;
+import static net.turniptales.discord.TurnipTalesDiscord.TURNIPTALES_BOT;
 
 public class Config {
 

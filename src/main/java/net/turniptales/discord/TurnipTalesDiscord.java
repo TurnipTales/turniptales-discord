@@ -24,12 +24,12 @@ import static net.dv8tion.jda.api.utils.cache.CacheFlag.VOICE_STATE;
 
 @Log4j2
 @SpringBootApplication
-public class TurniptalesDiscord implements WebMvcConfigurer {
+public class TurnipTalesDiscord implements WebMvcConfigurer {
 
     public static JDA TURNIPTALES_BOT;
 
     public static void main(String[] args) {
-        SpringApplication.run(TurniptalesDiscord.class, args);
+        SpringApplication.run(TurnipTalesDiscord.class, args);
 
         long discordBotStartTime = currentTimeMillis();
         log.info("Discord bot starting");
