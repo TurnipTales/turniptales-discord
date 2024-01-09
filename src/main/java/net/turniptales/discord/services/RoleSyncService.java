@@ -7,8 +7,6 @@ import net.turniptales.discord.Config;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -16,10 +14,21 @@ import java.util.concurrent.TimeUnit;
 
 import static java.lang.System.currentTimeMillis;
 import static java.util.concurrent.TimeUnit.HOURS;
+import static net.turniptales.discord.Config.ROLE_0;
+import static net.turniptales.discord.Config.ROLE_1_MONTH;
+import static net.turniptales.discord.Config.ROLE_1_WEEK;
+import static net.turniptales.discord.Config.ROLE_1_YEAR;
+import static net.turniptales.discord.Config.ROLE_2_WEEK;
+import static net.turniptales.discord.Config.ROLE_2_YEAR;
+import static net.turniptales.discord.Config.ROLE_3_MONTH;
+import static net.turniptales.discord.Config.ROLE_3_YEAR;
+import static net.turniptales.discord.Config.ROLE_6_MONTH;
 
 @Log4j2
 @Component
 public class RoleSyncService {
+
+    private List<Role> stayRoles;
 
     public RoleSyncService() {
         long sixHoursInMillis = HOURS.toMillis(6);
@@ -27,18 +36,38 @@ public class RoleSyncService {
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
+                assert ROLE_0 != null;
+                assert ROLE_1_WEEK != null;
+                assert ROLE_2_WEEK != null;
+                assert ROLE_1_MONTH != null;
+                assert ROLE_3_MONTH != null;
+                assert ROLE_6_MONTH != null;
+                assert ROLE_1_YEAR != null;
+                assert ROLE_2_YEAR != null;
+                assert ROLE_3_YEAR != null;
+                RoleSyncService.this.stayRoles = List.of(ROLE_0, ROLE_1_WEEK, ROLE_2_WEEK, ROLE_1_MONTH, ROLE_3_MONTH, ROLE_6_MONTH, ROLE_1_YEAR, ROLE_2_YEAR, ROLE_3_YEAR);
+
                 long startTime = currentTimeMillis();
                 log.info("Discord role synchronising: started");
 
                 Guild guild = Config.GUILD;
 
                 assert guild != null;
-                guild.loadMembers().get().forEach(member -> getRolesUserShouldHave(member.getTimeJoined()).stream()
-                        .filter(role -> !member.getRoles().contains(role))
-                        .forEach(role -> {
-                            guild.addRoleToMember(member, role).queue();
-                            log.info("Discord role synchronising: Add role {} to member {}", role.getName(), member.getEffectiveName());
-                        }));
+                guild.loadMembers().get().forEach(member -> {
+                    Role highestRoleUserShouldHave = getHighestRoleUserShouldHave(member.getTimeJoined());
+                    RoleSyncService.this.stayRoles.stream()
+                            .filter(role -> !role.equals(highestRoleUserShouldHave))
+                            .filter(role -> member.getRoles().contains(role))
+                            .forEach(role -> {
+                                guild.removeRoleFromMember(member, role).queue();
+                                log.info("Discord role synchronising: Remove role {} from member {}", role.getName(), member.getEffectiveName());
+                            });
+
+                    if (!member.getRoles().contains(highestRoleUserShouldHave)) {
+                        guild.addRoleToMember(member, highestRoleUserShouldHave).queue();
+                        log.info("Discord role synchronising: Add role {} to member {}", highestRoleUserShouldHave.getName(), member.getEffectiveName());
+                    }
+                });
 
                 log.info("Discord role synchronising: finished in {}ms", currentTimeMillis() - startTime);
             }
@@ -46,45 +75,44 @@ public class RoleSyncService {
         log.info("Discord role synchronising: scheduled");
     }
 
-    private Collection<Role> getRolesUserShouldHave(OffsetDateTime timeJoined) {
-        assert Config.ROLE_0 != null;
-        Collection<Role> roles = new ArrayList<>(List.of(Config.ROLE_0));
+    private Role getHighestRoleUserShouldHave(OffsetDateTime timeJoined) {
+        Role role = ROLE_0;
 
         long joinTimeInMillis = timeJoined.toInstant().toEpochMilli();
         long currentTimeInMillis = currentTimeMillis();
 
         if (joinTimeInMillis + TimeUnit.DAYS.toMillis(7) <= currentTimeInMillis) { // 1 Woche
-            roles.add(Config.ROLE_1_WEEK);
+            role = Config.ROLE_1_WEEK;
         }
 
         if (joinTimeInMillis + TimeUnit.DAYS.toMillis(14) <= currentTimeInMillis) { // 2 Wochen
-            roles.add(Config.ROLE_2_WEEK);
+            role = Config.ROLE_2_WEEK;
         }
 
         if (joinTimeInMillis + TimeUnit.DAYS.toMillis(30) <= currentTimeInMillis) { // 1 Monat
-            roles.add(Config.ROLE_1_MONTH);
+            role = Config.ROLE_1_MONTH;
         }
 
         if (joinTimeInMillis + TimeUnit.DAYS.toMillis(90) <= currentTimeInMillis) { // 3 Monate
-            roles.add(Config.ROLE_3_MONTH);
+            role = Config.ROLE_3_MONTH;
         }
 
         if (joinTimeInMillis + TimeUnit.DAYS.toMillis(180) <= currentTimeInMillis) { // 6 Monate
-            roles.add(Config.ROLE_6_MONTH);
+            role = Config.ROLE_6_MONTH;
         }
 
         if (joinTimeInMillis + TimeUnit.DAYS.toMillis(365) <= currentTimeInMillis) { // 1 Jahr
-            roles.add(Config.ROLE_1_YEAR);
+            role = Config.ROLE_1_YEAR;
         }
 
         if (joinTimeInMillis + TimeUnit.DAYS.toMillis(730) <= currentTimeInMillis) { // 2 Jahre
-            roles.add(Config.ROLE_2_YEAR);
+            role = Config.ROLE_2_YEAR;
         }
 
         if (joinTimeInMillis + TimeUnit.DAYS.toMillis(1460) <= currentTimeInMillis) { // 3 Jahre
-            roles.add(Config.ROLE_3_YEAR);
+            role = Config.ROLE_3_YEAR;
         }
 
-        return roles;
+        return role;
     }
 }
