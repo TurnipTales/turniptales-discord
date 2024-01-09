@@ -22,4 +22,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Artifacts
-          path: target/discord-1.0.0.jar
+          path: target/turniptales-discord.jar

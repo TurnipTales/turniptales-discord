@@ -2,6 +2,6 @@ FROM openjdk:17
 
 WORKDIR /app
 
-COPY discord.jar /app/discord.jar
+COPY turniptales-discord.jar /app/turniptales-discord.jar
 
-CMD ["java", "-jar", "discord.jar"]
+CMD ["java", "-jar", "turniptales-discord.jar"]
