@@ -6,8 +6,8 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.turniptales.discord.api.API;
-import net.turniptales.discord.api.schema.PlayerStats;
+import net.turniptales.discord.common.api.API;
+import net.turniptales.discord.common.api.model.PlayerStats;
 
 import static java.lang.String.valueOf;
 import static java.util.Objects.nonNull;

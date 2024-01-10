@@ -1,7 +1,7 @@
-package net.turniptales.discord.api;
+package net.turniptales.discord.common.api;
 
-import net.turniptales.discord.api.schema.PlayerStats;
-import net.turniptales.discord.api.schema.Verification;
+import net.turniptales.discord.common.api.model.PlayerStats;
+import net.turniptales.discord.common.api.model.Verification;
 
 import static java.util.UUID.fromString;
 

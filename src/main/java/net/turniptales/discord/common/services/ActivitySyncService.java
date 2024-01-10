@@ -1,4 +1,4 @@
-package net.turniptales.discord.services;
+package net.turniptales.discord.common.services;
 
 import lombok.extern.log4j.Log4j2;
 import net.dv8tion.jda.api.entities.Activity;
