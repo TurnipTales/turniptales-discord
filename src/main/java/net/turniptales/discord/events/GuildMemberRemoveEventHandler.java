@@ -16,7 +16,9 @@ public class GuildMemberRemoveEventHandler extends ListenerAdapter {
     public void onGuildMemberRemove(GuildMemberRemoveEvent e) {
         Guild guild = e.getGuild();
         TextChannel systemChannel = Config.SYSTEM_TEXT_CHANNEL;
-        if (systemChannel == null) return;
+        if (systemChannel == null) {
+            return;
+        }
 
         User user = e.getUser();
         int memberCount = guild.getMemberCount();

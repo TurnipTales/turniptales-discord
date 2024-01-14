@@ -15,7 +15,9 @@ public class GuildBanEventHandler extends ListenerAdapter {
     public void onGuildBan(GuildBanEvent e) {
         Guild guild = e.getGuild();
         TextChannel systemChannel = guild.getSystemChannel();
-        if (systemChannel == null) return;
+        if (systemChannel == null) {
+            return;
+        }
 
         User user = e.getUser();
         int memberCount = guild.getMemberCount();

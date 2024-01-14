@@ -17,7 +17,9 @@ public class StatsCommand extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent e) {
-        if (!e.getName().equals("stats")) return;
+        if (!e.getName().equals("stats")) {
+            return;
+        }
 
         OptionMapping playerOptionMapping = e.getOption("player");
         if (!nonNull(playerOptionMapping)) {

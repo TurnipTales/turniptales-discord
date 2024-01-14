@@ -14,7 +14,9 @@ public class VerifyCommand extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent e) {
-        if (!e.getName().equals("verify")) return;
+        if (!e.getName().equals("verify")) {
+            return;
+        }
 
         OptionMapping codeOptionMapping = e.getOption("code");
         if (!nonNull(codeOptionMapping)) {

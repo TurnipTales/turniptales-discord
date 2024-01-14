@@ -16,8 +16,9 @@ public class TicketCommand extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent e) {
-        if (!e.getName().equals("ticket") || !Objects.requireNonNull(e.getMember()).hasPermission(ADMINISTRATOR))
+        if (!e.getName().equals("ticket") || !Objects.requireNonNull(e.getMember()).hasPermission(ADMINISTRATOR)) {
             return;
+        }
 
         e.deferReply(true).queue();
         EmbedBuilder embedBuilder = new EmbedBuilder()

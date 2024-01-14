@@ -16,7 +16,9 @@ public class GuildMemberJoinEventHandler extends ListenerAdapter {
     public void onGuildMemberJoin(GuildMemberJoinEvent e) {
         Guild guild = e.getGuild();
         TextChannel systemChannel = guild.getSystemChannel();
-        if (systemChannel == null) return;
+        if (systemChannel == null) {
+            return;
+        }
 
         User user = e.getUser();
         int memberCount = guild.getMemberCount();
