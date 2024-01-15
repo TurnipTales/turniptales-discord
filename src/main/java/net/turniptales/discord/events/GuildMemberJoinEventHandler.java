@@ -6,9 +6,9 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.turniptales.discord.Config;
 
 import static java.awt.Color.GREEN;
+import static net.turniptales.discord.Config.ROLE_0;
 
 public class GuildMemberJoinEventHandler extends ListenerAdapter {
 
@@ -32,7 +32,7 @@ public class GuildMemberJoinEventHandler extends ListenerAdapter {
         systemChannel.sendMessageEmbeds(embedBuilder.build()).queue();
         systemChannel.getManager().setTopic("Aktuelle Spieler: " + memberCount).queue();
 
-        assert Config.ROLE_0 != null;
-        guild.addRoleToMember(user, Config.ROLE_0).queue();
+        assert ROLE_0 != null;
+        guild.addRoleToMember(user, ROLE_0).queue();
     }
 }

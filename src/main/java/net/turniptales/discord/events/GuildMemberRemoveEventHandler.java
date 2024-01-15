@@ -6,16 +6,16 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.turniptales.discord.Config;
 
 import static java.awt.Color.ORANGE;
+import static net.turniptales.discord.Config.SYSTEM_TEXT_CHANNEL;
 
 public class GuildMemberRemoveEventHandler extends ListenerAdapter {
 
     @Override
     public void onGuildMemberRemove(GuildMemberRemoveEvent e) {
         Guild guild = e.getGuild();
-        TextChannel systemChannel = Config.SYSTEM_TEXT_CHANNEL;
+        TextChannel systemChannel = SYSTEM_TEXT_CHANNEL;
         if (systemChannel == null) {
             return;
         }

@@ -3,17 +3,17 @@ package net.turniptales.discord.common.services;
 import lombok.extern.log4j.Log4j2;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
-import net.turniptales.discord.Config;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
 import static java.lang.System.currentTimeMillis;
+import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.concurrent.TimeUnit.HOURS;
+import static net.turniptales.discord.Config.GUILD;
 import static net.turniptales.discord.Config.ROLE_0;
 import static net.turniptales.discord.Config.ROLE_1_MONTH;
 import static net.turniptales.discord.Config.ROLE_1_WEEK;
@@ -50,7 +50,7 @@ public class RoleSyncService {
                 long startTime = currentTimeMillis();
                 log.info("Discord role synchronising: started");
 
-                Guild guild = Config.GUILD;
+                Guild guild = GUILD;
 
                 assert guild != null;
                 guild.loadMembers().get().forEach(member -> {
@@ -81,36 +81,36 @@ public class RoleSyncService {
         long joinTimeInMillis = timeJoined.toInstant().toEpochMilli();
         long currentTimeInMillis = currentTimeMillis();
 
-        if (joinTimeInMillis + TimeUnit.DAYS.toMillis(7) <= currentTimeInMillis) { // 1 Woche
-            role = Config.ROLE_1_WEEK;
+        if (joinTimeInMillis + DAYS.toMillis(7) <= currentTimeInMillis) { // 1 Woche
+            role = ROLE_1_WEEK;
         }
 
-        if (joinTimeInMillis + TimeUnit.DAYS.toMillis(14) <= currentTimeInMillis) { // 2 Wochen
-            role = Config.ROLE_2_WEEK;
+        if (joinTimeInMillis + DAYS.toMillis(14) <= currentTimeInMillis) { // 2 Wochen
+            role = ROLE_2_WEEK;
         }
 
-        if (joinTimeInMillis + TimeUnit.DAYS.toMillis(30) <= currentTimeInMillis) { // 1 Monat
-            role = Config.ROLE_1_MONTH;
+        if (joinTimeInMillis + DAYS.toMillis(30) <= currentTimeInMillis) { // 1 Monat
+            role = ROLE_1_MONTH;
         }
 
-        if (joinTimeInMillis + TimeUnit.DAYS.toMillis(90) <= currentTimeInMillis) { // 3 Monate
-            role = Config.ROLE_3_MONTH;
+        if (joinTimeInMillis + DAYS.toMillis(90) <= currentTimeInMillis) { // 3 Monate
+            role = ROLE_3_MONTH;
         }
 
-        if (joinTimeInMillis + TimeUnit.DAYS.toMillis(180) <= currentTimeInMillis) { // 6 Monate
-            role = Config.ROLE_6_MONTH;
+        if (joinTimeInMillis + DAYS.toMillis(180) <= currentTimeInMillis) { // 6 Monate
+            role = ROLE_6_MONTH;
         }
 
-        if (joinTimeInMillis + TimeUnit.DAYS.toMillis(365) <= currentTimeInMillis) { // 1 Jahr
-            role = Config.ROLE_1_YEAR;
+        if (joinTimeInMillis + DAYS.toMillis(365) <= currentTimeInMillis) { // 1 Jahr
+            role = ROLE_1_YEAR;
         }
 
-        if (joinTimeInMillis + TimeUnit.DAYS.toMillis(730) <= currentTimeInMillis) { // 2 Jahre
-            role = Config.ROLE_2_YEAR;
+        if (joinTimeInMillis + DAYS.toMillis(730) <= currentTimeInMillis) { // 2 Jahre
+            role = ROLE_2_YEAR;
         }
 
-        if (joinTimeInMillis + TimeUnit.DAYS.toMillis(1460) <= currentTimeInMillis) { // 3 Jahre
-            role = Config.ROLE_3_YEAR;
+        if (joinTimeInMillis + DAYS.toMillis(1460) <= currentTimeInMillis) { // 3 Jahre
+            role = ROLE_3_YEAR;
         }
 
         return role;
