@@ -32,7 +32,6 @@ public class Config {
     public static final Role ROLE_3_YEAR = GUILD.getRoleById("1134487702864142356");
 
     static {
-        assert GUILD != null;
-        BOT = GUILD.getMemberById("1033057310605586533");
+        BOT = GUILD.getMemberById("1190714643551891478");
     }
 }

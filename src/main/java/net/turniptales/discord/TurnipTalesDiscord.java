@@ -16,6 +16,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static java.lang.System.currentTimeMillis;
 import static net.dv8tion.jda.api.interactions.commands.OptionType.STRING;
+import static net.dv8tion.jda.api.interactions.commands.OptionType.USER;
 import static net.dv8tion.jda.api.requests.GatewayIntent.GUILD_MEMBERS;
 import static net.dv8tion.jda.api.requests.GatewayIntent.MESSAGE_CONTENT;
 import static net.dv8tion.jda.api.utils.Compression.NONE;
@@ -62,8 +63,8 @@ public class TurnipTalesDiscord implements WebMvcConfigurer {
                 .queue();
 
         TURNIPTALES_BOT
-                .upsertCommand("stats", "Statistiken eines Nutzers")
-                .addOption(STRING, "player", "Spielername", true)
+                .upsertCommand("stats", "Deine Statistiken (nicht öffentlich) oder die eines Discord Nutzers (öffentlich)")
+                .addOption(USER, "player", "Discord Nutzer dessen Statistiken angezeigt werden sollen (Discord Nutzer muss sich verknüpft haben)", false)
                 .queue();
     }
 }
