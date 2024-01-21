@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.turniptales.discord.common.api.Api;
 import net.turniptales.discord.common.api.model.PlayerStats;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -18,7 +19,7 @@ public class VerifyCommand extends ListenerAdapter {
         }
 
         OptionMapping codeOptionMapping = e.getOption("code");
-        if (!nonNull(codeOptionMapping)) {
+        if (isNull(codeOptionMapping)) {
             e.reply("Gib einen Verifizierungscode an!").setEphemeral(true).queue();
             return;
         }
