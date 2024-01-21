@@ -3,6 +3,8 @@ package net.turniptales.discord.commands;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -35,13 +37,19 @@ public class StatsCommand extends ListenerAdapter {
         Member member = e.getMember();
         if (nonNull(playerOptionMapping)) {
             PlayerStats playerStats = api.getPlayerStatsByDiscordUserId(playerOptionMapping.getAsUser().getIdLong());
-            MessageEmbed publicPlayerStats = getPublicPlayerStats(playerStats, member);
+            MessageEmbed publicPlayerStats = isTicketChannel(e.getChannel()) ? getPrivatePlayerStats(playerStats, member) : getPublicPlayerStats(playerStats, member);
             e.replyEmbeds(publicPlayerStats).queue();
         } else {
             PlayerStats playerStats = api.getPlayerStatsByDiscordUserId(e.getUser().getIdLong());
             MessageEmbed privatePlayerStats = getPrivatePlayerStats(playerStats, member);
             e.replyEmbeds(privatePlayerStats).setEphemeral(true).queue();
         }
+    }
+
+    private boolean isTicketChannel(Channel channel) {
+        return channel instanceof TextChannel textChannel
+                && nonNull(textChannel.getTopic())
+                && textChannel.getTopic().contains("Ticket von ");
     }
 
     private MessageEmbed getPublicPlayerStats(PlayerStats playerStats, Member member) {
