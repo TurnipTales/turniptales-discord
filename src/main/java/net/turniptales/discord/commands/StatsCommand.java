@@ -20,6 +20,7 @@ import java.util.StringJoiner;
 import static java.awt.Color.CYAN;
 import static java.lang.String.valueOf;
 import static java.util.Objects.nonNull;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static net.turniptales.discord.Config.BOT;
 import static net.turniptales.discord.common.api.model.stats.RoleplayData.Gender.MAN;
 
@@ -36,13 +37,23 @@ public class StatsCommand extends ListenerAdapter {
         Api api = new Api();
         Member member = e.getMember();
         if (nonNull(playerOptionMapping)) {
-            PlayerStats playerStats = api.getPlayerStatsByDiscordUserId(playerOptionMapping.getAsUser().getIdLong());
-            MessageEmbed publicPlayerStats = isTicketChannel(e.getChannel()) ? getPrivatePlayerStats(playerStats, member) : getPublicPlayerStats(playerStats, member);
-            e.replyEmbeds(publicPlayerStats).queue();
+            try {
+                PlayerStats playerStats = api.getPlayerStatsByDiscordUserId(playerOptionMapping.getAsUser().getIdLong());
+                MessageEmbed publicPlayerStats = isTicketChannel(e.getChannel()) ? getPrivatePlayerStats(playerStats, member) : getPublicPlayerStats(playerStats, member);
+                e.replyEmbeds(publicPlayerStats).queue();
+            } catch (Exception ex) {
+                e.reply("Der angegebene Spieler hat seinen Minecraft Account noch nicht verknüpft.").setEphemeral(true).queue();
+                e.getHook().deleteOriginal().queueAfter(5, SECONDS);
+            }
         } else {
-            PlayerStats playerStats = api.getPlayerStatsByDiscordUserId(e.getUser().getIdLong());
-            MessageEmbed privatePlayerStats = getPrivatePlayerStats(playerStats, member);
-            e.replyEmbeds(privatePlayerStats).setEphemeral(true).queue();
+            try {
+                PlayerStats playerStats = api.getPlayerStatsByDiscordUserId(e.getUser().getIdLong());
+                MessageEmbed privatePlayerStats = getPrivatePlayerStats(playerStats, member);
+                e.replyEmbeds(privatePlayerStats).setEphemeral(true).queue();
+            } catch (Exception ex) {
+                e.reply("Du hast deinen Minecraft Account noch nicht verknüpft.").setEphemeral(true).queue();
+                e.getHook().deleteOriginal().queueAfter(5, SECONDS);
+            }
         }
     }
 

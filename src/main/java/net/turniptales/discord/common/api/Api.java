@@ -40,7 +40,7 @@ public class Api {
 
     private WebClient getClient(String url) {
         return WebClient.builder()
-                .baseUrl("https://rettichlp.de:7100/turniptalesapi/v1/discord" + url)
+                .baseUrl("https://rettichlp.de:7100/turniptalesapi/v1/verification/discord" + url)
                 .defaultHeader("Authorization", "Basic dHVybmlwdGFsZXMtYXBpdXNlcjoqYnp0OThjV3EvLCckOT41SEN7NlEtTycralZFZmprMQ==")
                 .build();
     }
