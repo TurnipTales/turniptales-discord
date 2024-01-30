@@ -6,9 +6,9 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.turniptales.discord.commands.StatsCommand;
 import net.turniptales.discord.commands.TicketCommand;
 import net.turniptales.discord.commands.VerifyCommand;
-import net.turniptales.discord.events.GuildBanEventHandler;
-import net.turniptales.discord.events.GuildMemberJoinEventHandler;
-import net.turniptales.discord.events.GuildMemberRemoveEventHandler;
+import net.turniptales.discord.events.GuildMemberJoinListener;
+import net.turniptales.discord.events.GuildMemberRemoveListener;
+import net.turniptales.discord.events.GuildMemberUpdateBoostTimeListener;
 import net.turniptales.discord.events.TicketEventHandler;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -46,11 +46,17 @@ public class TurnipTalesDiscord implements WebMvcConfigurer {
                 .setCompression(NONE) // Disable compression (not recommended)
                 .enableIntents(MESSAGE_CONTENT)
                 .enableIntents(GUILD_MEMBERS)
-                .addEventListeners(new TicketCommand(), new VerifyCommand(), new StatsCommand())
-                .addEventListeners(new GuildMemberJoinEventHandler())
-                .addEventListeners(new GuildMemberRemoveEventHandler())
-                .addEventListeners(new GuildBanEventHandler())
-                .addEventListeners(new TicketEventHandler())
+                .addEventListeners(
+                        new TicketCommand(),
+                        new VerifyCommand(),
+                        new StatsCommand()
+                )
+                .addEventListeners(
+                        new GuildMemberJoinListener(),
+                        new GuildMemberRemoveListener(),
+                        new GuildMemberUpdateBoostTimeListener(),
+                        new TicketEventHandler()
+                )
                 .build();
 
         TURNIPTALES_BOT
