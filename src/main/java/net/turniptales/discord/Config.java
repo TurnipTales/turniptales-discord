@@ -14,7 +14,7 @@ public class Config {
     public static final Member BOT;
     // channels
     public static final TextChannel TICKET_TEXT_CHANNEL = GUILD.getTextChannelById("1009477703990267954");
-    public static final TextChannel MISSION_CONTROL_TEXT_CHANNEL = GUILD.getTextChannelById("1201654273923100772");
+    public static final TextChannel COMMUNITY_TEXT_CHANNEL = GUILD.getTextChannelById("1008929885764472952");
     //
     public static final Category TICKET_CATEGORY = GUILD.getCategoryById("1009478372847517727");
     // team roles

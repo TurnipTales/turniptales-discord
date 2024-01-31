@@ -13,7 +13,7 @@ import java.util.Date;
 
 import static java.util.Objects.nonNull;
 import static net.turniptales.discord.Config.BOT;
-import static net.turniptales.discord.Config.MISSION_CONTROL_TEXT_CHANNEL;
+import static net.turniptales.discord.Config.COMMUNITY_TEXT_CHANNEL;
 
 public class GuildMemberRemoveListener extends ListenerAdapter {
 
@@ -21,7 +21,7 @@ public class GuildMemberRemoveListener extends ListenerAdapter {
     public void onGuildMemberRemove(GuildMemberRemoveEvent e) {
         Guild guild = e.getGuild();
         User user = e.getUser();
-        TextChannel missionControlTextChannel = MISSION_CONTROL_TEXT_CHANNEL;
+        TextChannel missionControlTextChannel = guild.getSystemChannel();
         if (nonNull(missionControlTextChannel) && nonNull(BOT)) {
             EmbedBuilder embedBuilder = new EmbedBuilder()
                     .setColor(new Color(85, 85, 85))
@@ -37,12 +37,12 @@ public class GuildMemberRemoveListener extends ListenerAdapter {
     @Override
     public void onGuildBan(GuildBanEvent e) {
         Guild guild = e.getGuild();
-        User user = e.getUser();
-        TextChannel systemChannel = guild.getSystemChannel();
-        TextChannel missionControlTextChannel = MISSION_CONTROL_TEXT_CHANNEL;
-        if (nonNull(systemChannel) && nonNull(missionControlTextChannel) && nonNull(BOT)) {
+        TextChannel communityTextChannel = COMMUNITY_TEXT_CHANNEL;
+        TextChannel missionControlTextChannel = guild.getSystemChannel();
+        if (nonNull(communityTextChannel) && nonNull(missionControlTextChannel) && nonNull(BOT)) {
+            User user = e.getUser();
             Color color = new Color(255, 85, 85);
-            EmbedBuilder embedBuilderSystemChannel = new EmbedBuilder()
+            EmbedBuilder embedBuildercommunityTextChannel = new EmbedBuilder()
                     .setColor(color)
                     .setAuthor("TurnipTales", "https://turniptales.net/", BOT.getEffectiveAvatarUrl())
                     .setTitle("Auf wiedersehen!")
@@ -50,15 +50,15 @@ public class GuildMemberRemoveListener extends ListenerAdapter {
                     .setFooter("Aktuelle Spieler: " + guild.getMemberCount(), user.getEffectiveAvatarUrl())
                     .setTimestamp(new Date().toInstant());
 
-            EmbedBuilder embedBuilderMissionControlTextChannel = new EmbedBuilder()
+            EmbedBuilder embedBuildermissionControlTextChannel = new EmbedBuilder()
                     .setColor(color)
                     .setAuthor("TurnipTales", "https://turniptales.net/", BOT.getEffectiveAvatarUrl())
                     .setDescription(user.getAsMention() + " wurde gebannt.")
                     .setFooter("Aktuelle Spieler: " + guild.getMemberCount(), user.getEffectiveAvatarUrl())
                     .setTimestamp(new Date().toInstant());
 
-            systemChannel.sendMessageEmbeds(embedBuilderSystemChannel.build()).queue();
-            missionControlTextChannel.sendMessageEmbeds(embedBuilderMissionControlTextChannel.build()).queue();
+            communityTextChannel.sendMessageEmbeds(embedBuildercommunityTextChannel.build()).queue();
+            missionControlTextChannel.sendMessageEmbeds(embedBuildermissionControlTextChannel.build()).queue();
         }
     }
 }

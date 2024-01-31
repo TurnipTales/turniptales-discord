@@ -12,14 +12,15 @@ import java.util.Date;
 
 import static java.util.Objects.nonNull;
 import static net.turniptales.discord.Config.BOT;
+import static net.turniptales.discord.Config.COMMUNITY_TEXT_CHANNEL;
 
 public class GuildMemberUpdateBoostTimeListener extends ListenerAdapter {
 
     @Override
     public void onGuildMemberUpdateBoostTime(GuildMemberUpdateBoostTimeEvent e) {
         Guild guild = e.getGuild();
-        TextChannel systemChannel = guild.getSystemChannel();
-        if (nonNull(systemChannel) && nonNull(BOT)) {
+        TextChannel communityTextChannel = COMMUNITY_TEXT_CHANNEL;
+        if (nonNull(communityTextChannel) && nonNull(BOT)) {
             Member member = e.getMember();
 
             EmbedBuilder embedBuilder = new EmbedBuilder()
@@ -30,7 +31,7 @@ public class GuildMemberUpdateBoostTimeListener extends ListenerAdapter {
                     .setFooter("Aktuelle Boosts: **" + guild.getBoostCount() + "** (" + guild.getBoostTier() + ")", member.getEffectiveAvatarUrl())
                     .setTimestamp(new Date().toInstant());
 
-            systemChannel.sendMessageEmbeds(embedBuilder.build()).queue();
+            communityTextChannel.sendMessageEmbeds(embedBuilder.build()).queue();
         }
     }
 }

@@ -12,6 +12,7 @@ import java.util.Date;
 import static java.awt.Color.CYAN;
 import static java.util.Objects.nonNull;
 import static net.turniptales.discord.Config.BOT;
+import static net.turniptales.discord.Config.COMMUNITY_TEXT_CHANNEL;
 import static net.turniptales.discord.Config.ROLE_0;
 
 public class GuildMemberJoinListener extends ListenerAdapter {
@@ -19,11 +20,12 @@ public class GuildMemberJoinListener extends ListenerAdapter {
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent e) {
         Guild guild = e.getGuild();
-        TextChannel systemChannel = guild.getSystemChannel();
-        if (nonNull(systemChannel) && nonNull(BOT) && nonNull(ROLE_0)) {
+        TextChannel communityTextChannel = COMMUNITY_TEXT_CHANNEL;
+        TextChannel missionControlTextChannel = guild.getSystemChannel();
+        if (nonNull(communityTextChannel) && nonNull(missionControlTextChannel) && nonNull(BOT) && nonNull(ROLE_0)) {
             Member member = e.getMember();
 
-            EmbedBuilder embedBuilder = new EmbedBuilder()
+            EmbedBuilder embedBuildercommunityTextChannel = new EmbedBuilder()
                     .setColor(CYAN)
                     .setAuthor("TurnipTales", "https://turniptales.net/", BOT.getEffectiveAvatarUrl())
                     .setTitle("Willkommen auf TurnipTales!")
@@ -31,7 +33,15 @@ public class GuildMemberJoinListener extends ListenerAdapter {
                     .setFooter("Aktuelle Spieler: " + guild.getMemberCount(), member.getEffectiveAvatarUrl())
                     .setTimestamp(new Date().toInstant());
 
-            systemChannel.sendMessageEmbeds(embedBuilder.build()).queue();
+            EmbedBuilder embedBuildermissionControlTextChannel = new EmbedBuilder()
+                    .setColor(CYAN)
+                    .setAuthor("TurnipTales", "https://turniptales.net/", BOT.getEffectiveAvatarUrl())
+                    .setDescription(member.getAsMention() + " hat den Server betreten.")
+                    .setFooter("Aktuelle Spieler: " + guild.getMemberCount(), member.getEffectiveAvatarUrl())
+                    .setTimestamp(new Date().toInstant());
+
+            communityTextChannel.sendMessageEmbeds(embedBuildercommunityTextChannel.build()).queue();
+            missionControlTextChannel.sendMessageEmbeds(embedBuildermissionControlTextChannel.build()).queue();
 
             guild.addRoleToMember(e.getUser(), ROLE_0).queue();
         }
