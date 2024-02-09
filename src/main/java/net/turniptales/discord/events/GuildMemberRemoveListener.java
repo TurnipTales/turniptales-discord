@@ -18,23 +18,6 @@ import static net.turniptales.discord.Config.COMMUNITY_TEXT_CHANNEL;
 public class GuildMemberRemoveListener extends ListenerAdapter {
 
     @Override
-    public void onGuildMemberRemove(GuildMemberRemoveEvent e) {
-        Guild guild = e.getGuild();
-        User user = e.getUser();
-        TextChannel missionControlTextChannel = guild.getSystemChannel();
-        if (nonNull(missionControlTextChannel) && nonNull(BOT)) {
-            EmbedBuilder embedBuilder = new EmbedBuilder()
-                    .setColor(new Color(85, 85, 85))
-                    .setAuthor("TurnipTales", "https://turniptales.net/", BOT.getEffectiveAvatarUrl())
-                    .setDescription(user.getAsMention() + " hat den Server verlassen.")
-                    .setFooter("Aktuelle Spieler: " + guild.getMemberCount(), user.getEffectiveAvatarUrl())
-                    .setTimestamp(new Date().toInstant());
-
-            missionControlTextChannel.sendMessageEmbeds(embedBuilder.build()).queue();
-        }
-    }
-
-    @Override
     public void onGuildBan(GuildBanEvent e) {
         Guild guild = e.getGuild();
         TextChannel communityTextChannel = COMMUNITY_TEXT_CHANNEL;
@@ -59,6 +42,23 @@ public class GuildMemberRemoveListener extends ListenerAdapter {
 
             communityTextChannel.sendMessageEmbeds(embedBuildercommunityTextChannel.build()).queue();
             missionControlTextChannel.sendMessageEmbeds(embedBuildermissionControlTextChannel.build()).queue();
+        }
+    }
+
+    @Override
+    public void onGuildMemberRemove(GuildMemberRemoveEvent e) {
+        Guild guild = e.getGuild();
+        User user = e.getUser();
+        TextChannel missionControlTextChannel = guild.getSystemChannel();
+        if (nonNull(missionControlTextChannel) && nonNull(BOT)) {
+            EmbedBuilder embedBuilder = new EmbedBuilder()
+                    .setColor(new Color(85, 85, 85))
+                    .setAuthor("TurnipTales", "https://turniptales.net/", BOT.getEffectiveAvatarUrl())
+                    .setDescription(user.getAsMention() + " hat den Server verlassen.")
+                    .setFooter("Aktuelle Spieler: " + guild.getMemberCount(), user.getEffectiveAvatarUrl())
+                    .setTimestamp(new Date().toInstant());
+
+            missionControlTextChannel.sendMessageEmbeds(embedBuilder.build()).queue();
         }
     }
 }

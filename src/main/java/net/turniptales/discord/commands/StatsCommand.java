@@ -113,7 +113,7 @@ public class StatsCommand extends ListenerAdapter {
                 **Alter**: %s
                 **Geschlecht**: %s
                 """
-                .formatted(roleplayData.getFirstname() +  " " + roleplayData.getLastname(),
+                .formatted(roleplayData.getFirstname() + " " + roleplayData.getLastname(),
                         "20",
                         roleplayData.getGender().equals(MAN) ? ":male_sign:" : ":female_sign:");
     }

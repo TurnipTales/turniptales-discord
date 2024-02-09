@@ -29,39 +29,6 @@ import static net.turniptales.discord.Config.TICKET_CATEGORY;
 public class TicketEventHandler extends ListenerAdapter {
 
     @Override
-    public void onModalInteraction(ModalInteractionEvent e) {
-        String modalId = e.getModalId();
-
-        switch (modalId) {
-            case "ticket_modal":
-                Member member = e.getMember();
-                assert member != null;
-                String memberId = member.getId();
-                String userName = member.getUser().getName();
-
-                String minecraftName = e.getValue("minecraft_name_input").getAsString();
-                String log = e.getValue("topic_input").getAsString();
-
-                assert GUILD != null;
-                assert MODERATOR_ROLE != null;
-                assert SUPPORTER_ROLE != null;
-                TICKET_CATEGORY.createTextChannel("ticket-" + userName)
-                        .setTopic("Ticket von " + userName + " (" + memberId + ")")
-                        .addPermissionOverride(GUILD.getPublicRole(), null, EnumSet.of(VIEW_CHANNEL))
-                        .addPermissionOverride(member, EnumSet.of(VIEW_CHANNEL), null)
-                        .addPermissionOverride(MODERATOR_ROLE, EnumSet.of(VIEW_CHANNEL), null)
-                        .addPermissionOverride(SUPPORTER_ROLE, EnumSet.of(VIEW_CHANNEL), null)
-                        .queue(textChannel -> textChannel
-                                .sendMessage("Hey " + member.getAsMention() + "! Danke dass du ein Ticket erstellt hast. Die " + SUPPORTER_ROLE.getAsMention() + " und " + MODERATOR_ROLE.getAsMention() + " werden Dir schnellstmöglich deine Frage beantworten oder Dir helfen.\n"
-                                        + "Spieler:  " + minecraftName + "\n"
-                                        + "Anliegen: " + log)
-                                .addActionRow(success("closeTicket", "Ticket schließen").withEmoji(fromUnicode("U+1F512")))
-                                .queue(message -> e.reply("Du hast ein Ticket erstellt: " + message.getJumpUrl()).setEphemeral(true).queue()));
-                break;
-        }
-    }
-
-    @Override
     public void onButtonInteraction(ButtonInteractionEvent e) {
         String componentId = e.getComponentId();
 
@@ -119,6 +86,39 @@ public class TicketEventHandler extends ListenerAdapter {
                 }
             }
             case "closeTicketAbort" -> e.getMessage().delete().queue();
+        }
+    }
+
+    @Override
+    public void onModalInteraction(ModalInteractionEvent e) {
+        String modalId = e.getModalId();
+
+        switch (modalId) {
+            case "ticket_modal":
+                Member member = e.getMember();
+                assert member != null;
+                String memberId = member.getId();
+                String userName = member.getUser().getName();
+
+                String minecraftName = e.getValue("minecraft_name_input").getAsString();
+                String log = e.getValue("topic_input").getAsString();
+
+                assert GUILD != null;
+                assert MODERATOR_ROLE != null;
+                assert SUPPORTER_ROLE != null;
+                TICKET_CATEGORY.createTextChannel("ticket-" + userName)
+                        .setTopic("Ticket von " + userName + " (" + memberId + ")")
+                        .addPermissionOverride(GUILD.getPublicRole(), null, EnumSet.of(VIEW_CHANNEL))
+                        .addPermissionOverride(member, EnumSet.of(VIEW_CHANNEL), null)
+                        .addPermissionOverride(MODERATOR_ROLE, EnumSet.of(VIEW_CHANNEL), null)
+                        .addPermissionOverride(SUPPORTER_ROLE, EnumSet.of(VIEW_CHANNEL), null)
+                        .queue(textChannel -> textChannel
+                                .sendMessage("Hey " + member.getAsMention() + "! Danke dass du ein Ticket erstellt hast. Die " + SUPPORTER_ROLE.getAsMention() + " und " + MODERATOR_ROLE.getAsMention() + " werden Dir schnellstmöglich deine Frage beantworten oder Dir helfen.\n"
+                                        + "Spieler:  " + minecraftName + "\n"
+                                        + "Anliegen: " + log)
+                                .addActionRow(success("closeTicket", "Ticket schließen").withEmoji(fromUnicode("U+1F512")))
+                                .queue(message -> e.reply("Du hast ein Ticket erstellt: " + message.getJumpUrl()).setEphemeral(true).queue()));
+                break;
         }
     }
 }
