@@ -10,10 +10,13 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.turniptales.discord.Config;
 
 import java.util.EnumSet;
 import java.util.Objects;
 
+import static java.util.Optional.ofNullable;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static net.dv8tion.jda.api.Permission.VIEW_CHANNEL;
 import static net.dv8tion.jda.api.entities.emoji.Emoji.fromUnicode;
 import static net.dv8tion.jda.api.interactions.components.Modal.create;
@@ -25,8 +28,9 @@ import static net.turniptales.discord.Config.GUILD;
 import static net.turniptales.discord.Config.MODERATOR_ROLE;
 import static net.turniptales.discord.Config.SUPPORTER_ROLE;
 import static net.turniptales.discord.Config.TICKET_CATEGORY;
+import static net.turniptales.discord.commands.SurveyCommand.pendingSurveys;
 
-public class TicketEventHandler extends ListenerAdapter {
+public class ButtonInteractionListener extends ListenerAdapter {
 
     @Override
     public void onButtonInteraction(ButtonInteractionEvent e) {
@@ -86,6 +90,22 @@ public class TicketEventHandler extends ListenerAdapter {
                 }
             }
             case "closeTicketAbort" -> e.getMessage().delete().queue();
+            case "sendSurvey" -> {
+                Member member = e.getMember();
+                assert member != null;
+
+                ofNullable(pendingSurveys.remove(member)).ifPresentOrElse(survey -> {
+                    assert Config.SURVEY_TEXT_CHANNEL != null;
+                    Config.SURVEY_TEXT_CHANNEL.sendMessage("@everyone").setEmbeds(survey.toEmbed(member))
+                            .queue(message -> survey.getReactions().forEach(emoji -> message.addReaction(emoji).queue()));
+
+                    e.reply("Umfrage veröffentlicht!").setEphemeral(true).queue();
+                    e.getHook().deleteOriginal().queueAfter(5, SECONDS);
+                }, () -> {
+                    e.reply("Es gibt keine Umfrage die veröffentlicht werden kann!").setEphemeral(true).queue();
+                    e.getHook().deleteOriginal().queueAfter(5, SECONDS);
+                });
+            }
         }
     }
 

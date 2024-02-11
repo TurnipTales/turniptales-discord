@@ -13,8 +13,9 @@ public class Config {
     public static final Guild GUILD = TURNIPTALES_BOT.getGuildById("1008928645185810463");
     public static final Member BOT;
     // channels
-    public static final TextChannel TICKET_TEXT_CHANNEL = GUILD.getTextChannelById("1009477703990267954");
     public static final TextChannel COMMUNITY_TEXT_CHANNEL = GUILD.getTextChannelById("1008929885764472952");
+    public static final TextChannel SURVEY_TEXT_CHANNEL = GUILD.getTextChannelById("1206336710128959519");
+    public static final TextChannel TICKET_TEXT_CHANNEL = GUILD.getTextChannelById("1009477703990267954");
     //
     public static final Category TICKET_CATEGORY = GUILD.getCategoryById("1009478372847517727");
     // player roles
