@@ -14,6 +14,7 @@ import static java.lang.System.currentTimeMillis;
 import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.concurrent.TimeUnit.HOURS;
 import static net.turniptales.discord.Config.GUILD;
+import static net.turniptales.discord.Config.PLAYER_ROLE;
 import static net.turniptales.discord.Config.ROLE_0;
 import static net.turniptales.discord.Config.ROLE_1_MONTH;
 import static net.turniptales.discord.Config.ROLE_1_WEEK;
@@ -63,7 +64,9 @@ public class RoleSyncService {
                                 log.info("Discord role synchronising: Remove role {} from member {}", role.getName(), member.getEffectiveName());
                             });
 
-                    if (!member.getRoles().contains(highestRoleUserShouldHave)) {
+                    if (!member.getRoles().contains(PLAYER_ROLE) || !member.getRoles().contains(highestRoleUserShouldHave)) {
+                        assert PLAYER_ROLE != null;
+                        guild.addRoleToMember(member, PLAYER_ROLE).queue();
                         guild.addRoleToMember(member, highestRoleUserShouldHave).queue();
                         log.info("Discord role synchronising: Add role {} to member {}", highestRoleUserShouldHave.getName(), member.getEffectiveName());
                     }

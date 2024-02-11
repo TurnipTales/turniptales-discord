@@ -17,6 +17,8 @@ public class Config {
     public static final TextChannel COMMUNITY_TEXT_CHANNEL = GUILD.getTextChannelById("1008929885764472952");
     //
     public static final Category TICKET_CATEGORY = GUILD.getCategoryById("1009478372847517727");
+    // player roles
+    public static final Role PLAYER_ROLE = GUILD.getRoleById("1190675464549847110");
     // team roles
     public static final Role MODERATOR_ROLE = GUILD.getRoleById("1025864289346658355");
     public static final Role SUPPORTER_ROLE = GUILD.getRoleById("1009477020427747408");
