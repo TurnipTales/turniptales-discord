@@ -28,6 +28,7 @@ import static net.turniptales.discord.Config.GUILD;
 import static net.turniptales.discord.Config.MODERATOR_ROLE;
 import static net.turniptales.discord.Config.SUPPORTER_ROLE;
 import static net.turniptales.discord.Config.TICKET_CATEGORY;
+import static net.turniptales.discord.commands.GiveawayCommand.giveaways;
 import static net.turniptales.discord.commands.SurveyCommand.pendingSurveys;
 
 public class ButtonInteractionListener extends ListenerAdapter {
@@ -106,6 +107,11 @@ public class ButtonInteractionListener extends ListenerAdapter {
                     e.getHook().deleteOriginal().queueAfter(5, SECONDS);
                 });
             }
+            case "publishWinner" -> {
+                giveaways.get(e.getUser()).publishWinner();
+                e.reply("Gewinner veröffentlicht!").setEphemeral(true).queue();
+                e.getHook().deleteOriginal().queueAfter(5, SECONDS);
+            }
         }
     }
 
@@ -114,7 +120,7 @@ public class ButtonInteractionListener extends ListenerAdapter {
         String modalId = e.getModalId();
 
         switch (modalId) {
-            case "ticket_modal":
+            case "ticket_modal" -> {
                 Member member = e.getMember();
                 assert member != null;
                 String memberId = member.getId();
@@ -138,7 +144,7 @@ public class ButtonInteractionListener extends ListenerAdapter {
                                         + "Anliegen: " + log)
                                 .addActionRow(success("closeTicket", "Ticket schließen").withEmoji(fromUnicode("U+1F512")))
                                 .queue(message -> e.reply("Du hast ein Ticket erstellt: " + message.getJumpUrl()).setEphemeral(true).queue()));
-                break;
+            }
         }
     }
 }

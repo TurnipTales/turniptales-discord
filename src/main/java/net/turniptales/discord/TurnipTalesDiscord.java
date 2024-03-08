@@ -3,6 +3,7 @@ package net.turniptales.discord;
 import lombok.extern.log4j.Log4j2;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.turniptales.discord.commands.GiveawayCommand;
 import net.turniptales.discord.commands.StatsCommand;
 import net.turniptales.discord.commands.SurveyCommand;
 import net.turniptales.discord.commands.TicketCommand;
@@ -49,6 +50,7 @@ public class TurnipTalesDiscord implements WebMvcConfigurer {
                 .enableIntents(MESSAGE_CONTENT)
                 .enableIntents(GUILD_MEMBERS)
                 .addEventListeners(
+                        new GiveawayCommand(),
                         new StatsCommand(),
                         new SurveyCommand(),
                         new TicketCommand(),
@@ -86,6 +88,11 @@ public class TurnipTalesDiscord implements WebMvcConfigurer {
         TURNIPTALES_BOT
                 .upsertCommand("verify", "Verifiziert deinen Minecraft Account")
                 .addOption(STRING, "code", "Verifizierungscode", true)
+                .queue();
+
+        TURNIPTALES_BOT
+                .upsertCommand("giveaway", "Lost einen Spieler anhand der Reaktionen einer Nachricht aus")
+                .addOption(STRING, "message", "Nachricht mit den Reaktionen", true)
                 .queue();
     }
 }
