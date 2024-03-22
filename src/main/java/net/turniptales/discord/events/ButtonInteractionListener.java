@@ -26,6 +26,7 @@ import static net.dv8tion.jda.api.interactions.components.buttons.Button.success
 import static net.dv8tion.jda.api.interactions.components.text.TextInputStyle.PARAGRAPH;
 import static net.turniptales.discord.Config.GUILD;
 import static net.turniptales.discord.Config.MODERATOR_ROLE;
+import static net.turniptales.discord.Config.SENIOR_MODERATOR_ROLE;
 import static net.turniptales.discord.Config.SUPPORTER_ROLE;
 import static net.turniptales.discord.Config.TICKET_CATEGORY;
 import static net.turniptales.discord.commands.GiveawayCommand.giveaways;
@@ -130,12 +131,14 @@ public class ButtonInteractionListener extends ListenerAdapter {
                 String log = e.getValue("topic_input").getAsString();
 
                 assert GUILD != null;
+                assert SENIOR_MODERATOR_ROLE != null;
                 assert MODERATOR_ROLE != null;
                 assert SUPPORTER_ROLE != null;
                 TICKET_CATEGORY.createTextChannel("ticket-" + userName)
                         .setTopic("Ticket von " + userName + " (" + memberId + ")")
                         .addPermissionOverride(GUILD.getPublicRole(), null, EnumSet.of(VIEW_CHANNEL))
                         .addPermissionOverride(member, EnumSet.of(VIEW_CHANNEL), null)
+                        .addPermissionOverride(SENIOR_MODERATOR_ROLE, EnumSet.of(VIEW_CHANNEL), null)
                         .addPermissionOverride(MODERATOR_ROLE, EnumSet.of(VIEW_CHANNEL), null)
                         .addPermissionOverride(SUPPORTER_ROLE, EnumSet.of(VIEW_CHANNEL), null)
                         .queue(textChannel -> textChannel

@@ -21,6 +21,7 @@ public class Config {
     // player roles
     public static final Role PLAYER_ROLE = GUILD.getRoleById("1190675464549847110");
     // team roles
+    public static final Role SENIOR_MODERATOR_ROLE = GUILD.getRoleById("1208149723547050004");
     public static final Role MODERATOR_ROLE = GUILD.getRoleById("1025864289346658355");
     public static final Role SUPPORTER_ROLE = GUILD.getRoleById("1009477020427747408");
     // user time roles
