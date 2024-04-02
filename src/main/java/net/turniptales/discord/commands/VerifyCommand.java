@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.turniptales.discord.common.api.Api;
-import net.turniptales.discord.common.api.model.PlayerStats;
+import net.turniptales.discord.common.api.model.DiscordPlayerStats;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -24,10 +24,10 @@ public class VerifyCommand extends ListenerAdapter {
             return;
         }
 
-        PlayerStats playerStats = new Api().getPlayerStatsByDiscordUserIdVerify(e.getUser().getIdLong(), codeOptionMapping.getAsString());
+        DiscordPlayerStats discordPlayerStats = new Api().getPlayerStatsByDiscordUserId(e.getUser().getIdLong(), codeOptionMapping.getAsString());
         String message;
-        if (nonNull(playerStats)) {
-            message = "Du hast deinen Discord Account mit dem Minecraft Account " + playerStats.getMinecraftName() + " verknüpft!\nDiese Nachricht zerstört sich gleich von selbst...";
+        if (nonNull(discordPlayerStats)) {
+            message = "Du hast deinen Discord Account mit dem Minecraft Account " + discordPlayerStats.getMinecraftName() + " verknüpft!\nDiese Nachricht zerstört sich gleich von selbst...";
         } else {
             message = "Dein Discord Account konnte nicht mit deinem Minecraft Account verknüpft werden.";
         }

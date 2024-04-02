@@ -17,7 +17,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.time.ZoneId;
+
 import static java.lang.System.currentTimeMillis;
+import static java.time.ZoneId.of;
 import static net.dv8tion.jda.api.interactions.commands.OptionType.STRING;
 import static net.dv8tion.jda.api.interactions.commands.OptionType.USER;
 import static net.dv8tion.jda.api.requests.GatewayIntent.GUILD_MEMBERS;
@@ -31,9 +34,11 @@ import static net.dv8tion.jda.api.utils.cache.CacheFlag.VOICE_STATE;
 public class TurnipTalesDiscord implements WebMvcConfigurer {
 
     public static JDA TURNIPTALES_BOT;
+    public static ZoneId ZONE_ID;
 
     public static void main(String[] args) {
         SpringApplication.run(TurnipTalesDiscord.class, args);
+        ZONE_ID = of("Europe/Berlin");
 
         long discordBotStartTime = currentTimeMillis();
         log.info("Discord bot starting");
