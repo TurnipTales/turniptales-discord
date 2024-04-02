@@ -12,17 +12,23 @@ import net.turniptales.discord.common.api.Api;
 import net.turniptales.discord.common.api.model.DiscordPlayerStats;
 import net.turniptales.discord.common.api.model.PunishmentData;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Date;
 import java.util.List;
 import java.util.StringJoiner;
 
 import static java.awt.Color.CYAN;
 import static java.lang.String.valueOf;
+import static java.util.Locale.US;
 import static java.util.Objects.nonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static net.turniptales.discord.Config.BOT;
 
 public class StatsCommand extends ListenerAdapter {
+
+    public static final DecimalFormatSymbols US_SYMBOLS = DecimalFormatSymbols.getInstance(US);
+    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("###.##", US_SYMBOLS);
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent e) {
@@ -118,7 +124,7 @@ public class StatsCommand extends ListenerAdapter {
                 **Bargeld**: %s$
                 **PayPal**: %s$
                 """
-                .formatted(discordPlayerStats.getBankBalance(), discordPlayerStats.getCashBalance(), discordPlayerStats.getPalPayBalance());
+                .formatted(DECIMAL_FORMAT.format(discordPlayerStats.getBankBalance()), DECIMAL_FORMAT.format(discordPlayerStats.getCashBalance()), DECIMAL_FORMAT.format(discordPlayerStats.getPalPayBalance()));
     }
 
     private String getPunishments(PunishmentData punishmentData) {
