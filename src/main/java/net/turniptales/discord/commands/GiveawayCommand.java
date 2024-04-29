@@ -25,7 +25,7 @@ import static net.dv8tion.jda.api.interactions.components.buttons.Button.success
 @Log4j2
 public class GiveawayCommand extends ListenerAdapter {
 
-    public static Map<User, Giveaway> giveaways = new HashMap<>();
+    public static final Map<User, Giveaway> giveaways = new HashMap<>();
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent e) {

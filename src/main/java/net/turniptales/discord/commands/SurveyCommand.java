@@ -26,7 +26,7 @@ import static net.turniptales.discord.Config.BOT;
 
 public class SurveyCommand extends ListenerAdapter {
 
-    public static Map<Member, Survey> pendingSurveys = new HashMap<>();
+    public static final Map<Member, Survey> pendingSurveys = new HashMap<>();
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent e) {
