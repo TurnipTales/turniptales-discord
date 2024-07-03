@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.turniptales.discord.common.api.Api;
-import net.turniptales.discord.common.api.model.DiscordPlayerStats;
+import net.turniptales.discord.common.api.model.ConnectionDataValue;
 import net.turniptales.discord.common.api.model.PunishmentData;
 
 import java.text.DecimalFormat;
@@ -42,8 +42,8 @@ public class StatsCommand extends ListenerAdapter {
         Member member = e.getMember();
         if (nonNull(playerOptionMapping)) {
             try {
-                DiscordPlayerStats discordPlayerStats = api.getPlayerStatsByDiscordUserId(playerOptionMapping.getAsUser().getIdLong(), null);
-                MessageEmbed publicPlayerStats = isTicketChannel(e.getChannel()) ? getPrivatePlayerStats(discordPlayerStats, member) : getPublicPlayerStats(discordPlayerStats, member);
+                ConnectionDataValue connectionDataValue = api.getData(e.getUser().getIdLong());
+                MessageEmbed publicPlayerStats = isTicketChannel(e.getChannel()) ? getPrivatePlayerStats(connectionDataValue, member) : getPublicPlayerStats(connectionDataValue, member);
                 e.replyEmbeds(publicPlayerStats).queue();
             } catch (Exception ex) {
                 e.reply("Der angegebene Spieler hat seinen Minecraft Account noch nicht verknüpft.").setEphemeral(true).queue();
@@ -51,8 +51,8 @@ public class StatsCommand extends ListenerAdapter {
             }
         } else {
             try {
-                DiscordPlayerStats discordPlayerStats = api.getPlayerStatsByDiscordUserId(e.getUser().getIdLong(), null);
-                MessageEmbed privatePlayerStats = getPrivatePlayerStats(discordPlayerStats, member);
+                ConnectionDataValue connectionDataValue = api.getData(e.getUser().getIdLong());
+                MessageEmbed privatePlayerStats = getPrivatePlayerStats(connectionDataValue, member);
                 e.replyEmbeds(privatePlayerStats).setEphemeral(true).queue();
             } catch (Exception ex) {
                 e.reply("Du hast deinen Minecraft Account noch nicht verknüpft.").setEphemeral(true).queue();
@@ -67,64 +67,64 @@ public class StatsCommand extends ListenerAdapter {
                 && textChannel.getTopic().contains("Ticket von ");
     }
 
-    private MessageEmbed getPublicPlayerStats(DiscordPlayerStats discordPlayerStats, Member member) {
-        return getDefaultEmbedBuilder(discordPlayerStats, member)
-                .addField("Level", valueOf(discordPlayerStats.getLevel()), true)
-                .addField("Fraktion:", discordPlayerStats.getGroup(), true)
-                .addField("Kennt Spieler", valueOf(discordPlayerStats.getKnownPlayerCount()), true)
+    private MessageEmbed getPublicPlayerStats(ConnectionDataValue connectionDataValue, Member member) {
+        return getDefaultEmbedBuilder(connectionDataValue, member)
+                .addField("Level", valueOf(connectionDataValue.getLevel()), true)
+                .addField("Fraktion:", connectionDataValue.getGroup(), true)
+                .addField("Kennt Spieler", valueOf(connectionDataValue.getKnownPlayerCount()), true)
 
-                .addField("Steckbrief", getCharacteristics(discordPlayerStats), false)
+                .addField("Steckbrief", getCharacteristics(connectionDataValue), false)
                 .addBlankField(false)
-                .addField("Häuser:", getHouses(discordPlayerStats.getHouses()), true)
-                .addField("Autos:", getCars(discordPlayerStats.getCars()), true)
+                .addField("Häuser:", getHouses(connectionDataValue.getHouses()), true)
+                .addField("Autos:", getCars(connectionDataValue.getCars()), true)
                 .build();
     }
 
-    private MessageEmbed getPrivatePlayerStats(DiscordPlayerStats discordPlayerStats, Member member) {
-        return getDefaultEmbedBuilder(discordPlayerStats, member)
-                .addField("Level", valueOf(discordPlayerStats.getLevel()), true)
-                .addField("Fraktion:", discordPlayerStats.getGroup(), true)
-                .addField("Kennt Spieler", valueOf(discordPlayerStats.getKnownPlayerCount()), true)
+    private MessageEmbed getPrivatePlayerStats(ConnectionDataValue connectionDataValue, Member member) {
+        return getDefaultEmbedBuilder(connectionDataValue, member)
+                .addField("Level", valueOf(connectionDataValue.getLevel()), true)
+                .addField("Fraktion:", connectionDataValue.getGroup(), true)
+                .addField("Kennt Spieler", valueOf(connectionDataValue.getKnownPlayerCount()), true)
 
-                .addField("Steckbrief", getCharacteristics(discordPlayerStats), false)
-                .addField("Finanzen", getBalances(discordPlayerStats), true)
-                .addField("Bestrafung", getPunishments(discordPlayerStats.getPunishmentData()), true)
+                .addField("Steckbrief", getCharacteristics(connectionDataValue), false)
+                .addField("Finanzen", getBalances(connectionDataValue), true)
+                .addField("Bestrafung", getPunishments(connectionDataValue.getPunishmentData()), true)
                 .addBlankField(false)
-                .addField("Häuser:", getHouses(discordPlayerStats.getHouses()), true)
-                .addField("Autos:", getCars(discordPlayerStats.getCars()), true)
+                .addField("Häuser:", getHouses(connectionDataValue.getHouses()), true)
+                .addField("Autos:", getCars(connectionDataValue.getCars()), true)
                 .build();
     }
 
-    private EmbedBuilder getDefaultEmbedBuilder(DiscordPlayerStats discordPlayerStats, Member member) {
+    private EmbedBuilder getDefaultEmbedBuilder(ConnectionDataValue connectionDataValue, Member member) {
         assert BOT != null;
         return new EmbedBuilder()
                 .setColor(CYAN)
-                .setThumbnail("https://minotar.net/helm/" + discordPlayerStats.getMinecraftUuid() + "/300.png")
+                .setThumbnail("https://minotar.net/helm/" + connectionDataValue.getMinecraftUuid() + "/300.png")
                 .setAuthor("TurnipTales", "https://turniptales.net/", BOT.getEffectiveAvatarUrl())
-                .setTitle("Statistiken von " + discordPlayerStats.getMinecraftName())
-                .setDescription("**Role**: " + discordPlayerStats.getRole())
+                .setTitle("Statistiken von " + connectionDataValue.getMinecraftName())
+                .setDescription("**Role**: " + connectionDataValue.getRole())
                 .setFooter(member.getEffectiveName(), member.getEffectiveAvatarUrl())
                 .setTimestamp(new Date().toInstant());
     }
 
-    private String getCharacteristics(DiscordPlayerStats discordPlayerStats) {
+    private String getCharacteristics(ConnectionDataValue connectionDataValue) {
         return """
                 **Name**: %s
                 **Alter**: %s
                 **Geschlecht**: %s
                 """
-                .formatted(discordPlayerStats.getRoleplayName(),
-                        discordPlayerStats.getAge(),
-                        discordPlayerStats.getGender().equals("MAN") ? ":male_sign:" : ":female_sign:");
+                .formatted(connectionDataValue.getRoleplayName(),
+                        connectionDataValue.getAge(),
+                        connectionDataValue.getGender().equals("MAN") ? ":male_sign:" : ":female_sign:");
     }
 
-    private String getBalances(DiscordPlayerStats discordPlayerStats) {
+    private String getBalances(ConnectionDataValue connectionDataValue) {
         return """
                 **Bank**: %s$
                 **Bargeld**: %s$
                 **PayPal**: %s$
                 """
-                .formatted(DECIMAL_FORMAT.format(discordPlayerStats.getBankBalance()), DECIMAL_FORMAT.format(discordPlayerStats.getCashBalance()), DECIMAL_FORMAT.format(discordPlayerStats.getPalPayBalance()));
+                .formatted(DECIMAL_FORMAT.format(connectionDataValue.getBankBalance()), DECIMAL_FORMAT.format(connectionDataValue.getCashBalance()), DECIMAL_FORMAT.format(connectionDataValue.getPalPayBalance()));
     }
 
     private String getPunishments(PunishmentData punishmentData) {
@@ -139,7 +139,7 @@ public class StatsCommand extends ListenerAdapter {
                 .formatted(!punishmentData.noWeaponBlockActive(), !punishmentData.noGroupBlockActive(), !punishmentData.noSkillBlockActive(), !punishmentData.noAdBlockActive(), !punishmentData.noCarBlockActive(), punishmentData.getCheckpointsLeft());
     }
 
-    private String getHouses(List<Integer> houses) {
+    private String getHouses(List<Long> houses) {
         StringJoiner houseJoiner = new StringJoiner("\n- ", "- ", "");
         houses.stream()
                 .map(Object::toString)

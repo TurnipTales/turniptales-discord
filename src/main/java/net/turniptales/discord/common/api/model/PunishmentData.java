@@ -15,7 +15,6 @@ import static net.turniptales.discord.TurnipTalesDiscord.ZONE_ID;
 @Builder
 public class PunishmentData {
 
-    private long id;
     @Nullable
     private ZonedDateTime weaponBlockUntilDateTime;
     @Nullable
