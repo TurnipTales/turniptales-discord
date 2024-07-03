@@ -8,15 +8,21 @@ import java.util.UUID;
 
 @Data
 @Builder
-public class DiscordPlayerStats {
+public class ConnectionDataValue {
 
     // data
+    private String citizenId;
     private UUID minecraftUuid;
     private String minecraftName;
     private String role;
+    private String roleDisplayName;
+    private List<String> teams;
     private int level;
-    private String group;
     private int knownPlayerCount;
+    // group
+    private String group;
+    private int factionRank;
+    private boolean leaderRights;
     // characteristics
     private String roleplayName;
     private int age;
@@ -25,7 +31,8 @@ public class DiscordPlayerStats {
     private double bankBalance;
     private double cashBalance;
     private double palPayBalance;
+    // other
     private PunishmentData punishmentData;
-    private List<Integer> houses;
+    private List<Long> houses;
     private List<String> cars;
 }
