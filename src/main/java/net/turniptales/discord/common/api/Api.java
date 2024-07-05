@@ -8,11 +8,15 @@ import com.google.gson.JsonSerializer;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import net.turniptales.discord.common.api.model.ConnectionDataValue;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 
 import java.time.ZonedDateTime;
 
+import static com.google.gson.JsonParser.parseString;
 import static java.lang.String.format;
 import static java.time.ZonedDateTime.parse;
 import static java.time.format.DateTimeFormatter.ISO_ZONED_DATE_TIME;
@@ -26,14 +30,14 @@ public class Api {
     /**
      * {@link ConnectionDataValue}
      */
-    public ConnectionDataValue getData(long accountUserId) {
-        String url = format("/data?discordUserId%s", accountUserId);
-        return getGson().fromJson(sendGetRequest(url), ConnectionDataValue.class);
+    public ConnectionDataValue getData(String accountUserId) {
+        String url = format("/data?discordUserId=%s", accountUserId);
+        return getGson().fromJson(sendRequest(url, GET).getBody(), ConnectionDataValue.class);
     }
 
-    public ResponseEntity<Void> connect(long accountUserId, String code) {
+    public ResponseEntity<String> connect(String accountUserId, String code) {
         String url = format("/connect?type=DISCORD&accountUserId=%s&code=%s", accountUserId, code);
-        return sendPostRequest(url);
+        return sendRequest(url, POST);
     }
 
     /**
@@ -46,17 +50,17 @@ public class Api {
                 .create();
     }
 
-    private String sendGetRequest(String url) {
-        return getClient(url).method(GET)
+    private ResponseEntity<String> sendRequest(String url, HttpMethod method) {
+        return getClient(url).method(method)
                 .retrieve()
                 .bodyToMono(String.class)
-                .block();
-    }
-
-    private ResponseEntity<Void> sendPostRequest(String url) {
-        return getClient(url).method(POST)
-                .retrieve()
-                .toBodilessEntity()
+                .map(ResponseEntity::ok)
+                .onErrorResume(WebClientResponseException.class, ex -> {
+                    String responseBodyAsString = ex.getResponseBodyAsString();
+                    String info = parseString(responseBodyAsString).getAsJsonObject().get("info").getAsString();
+                    log.error("Request failed with code {}: {}", ex.getStatusCode(), info);
+                    return Mono.just(ResponseEntity.status(ex.getStatusCode()).body(responseBodyAsString));
+                })
                 .block();
     }
 
