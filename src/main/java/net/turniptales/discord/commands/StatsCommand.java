@@ -41,7 +41,7 @@ public class StatsCommand extends ListenerAdapter {
         Member member = e.getMember();
         if (nonNull(playerOptionMapping)) {
             try {
-                ConnectionDataValue connectionDataValue = api.getData(e.getUser().getIdLong());
+                ConnectionDataValue connectionDataValue = api.getData(e.getUser().getId());
                 MessageEmbed publicPlayerStats = isTicketChannel(e.getChannel()) ? getPrivatePlayerStats(connectionDataValue, member) : getPublicPlayerStats(connectionDataValue, member);
                 e.replyEmbeds(publicPlayerStats).queue();
             } catch (Exception ex) {
@@ -50,7 +50,7 @@ public class StatsCommand extends ListenerAdapter {
             }
         } else {
             try {
-                ConnectionDataValue connectionDataValue = api.getData(e.getUser().getIdLong());
+                ConnectionDataValue connectionDataValue = api.getData(e.getUser().getId());
                 MessageEmbed privatePlayerStats = getPrivatePlayerStats(connectionDataValue, member);
                 e.replyEmbeds(privatePlayerStats).setEphemeral(true).queue();
             } catch (Exception ex) {

@@ -24,10 +24,8 @@ public class VerifyCommand extends ListenerAdapter {
             return;
         }
 
-        Api api = new Api();
-
-        long accountUserId = e.getUser().getIdLong();
         ResponseEntity<Void> response = api.connect(accountUserId, codeOptionMapping.getAsString());
+        String accountUserId = e.getUser().getId();
         boolean success = response.getStatusCode().is2xxSuccessful();
 
         String message;
