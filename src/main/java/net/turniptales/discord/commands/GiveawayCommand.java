@@ -87,6 +87,7 @@ public class GiveawayCommand extends ListenerAdapter {
     }
 
     public static class Giveaway {
+
         private final Message message;
         private final List<User> users;
         private final User winner;
