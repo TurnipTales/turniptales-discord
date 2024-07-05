@@ -8,7 +8,6 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.turniptales.discord.common.api.Api;
 import net.turniptales.discord.common.api.model.ConnectionDataValue;
 import net.turniptales.discord.common.api.model.PunishmentData;
 
@@ -24,6 +23,7 @@ import static java.util.Locale.US;
 import static java.util.Objects.nonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static net.turniptales.discord.Config.BOT;
+import static net.turniptales.discord.TurnipTalesDiscord.api;
 
 public class StatsCommand extends ListenerAdapter {
 
@@ -38,7 +38,6 @@ public class StatsCommand extends ListenerAdapter {
 
         OptionMapping playerOptionMapping = e.getOption("player");
 
-        Api api = new Api();
         Member member = e.getMember();
         if (nonNull(playerOptionMapping)) {
             try {

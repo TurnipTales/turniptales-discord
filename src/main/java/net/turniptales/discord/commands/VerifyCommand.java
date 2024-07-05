@@ -3,12 +3,12 @@ package net.turniptales.discord.commands;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.turniptales.discord.common.api.Api;
 import net.turniptales.discord.common.api.model.ConnectionDataValue;
 import org.springframework.http.ResponseEntity;
 
 import static java.util.Objects.isNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static net.turniptales.discord.TurnipTalesDiscord.api;
 
 public class VerifyCommand extends ListenerAdapter {
 

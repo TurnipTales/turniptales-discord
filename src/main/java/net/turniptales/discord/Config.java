@@ -6,11 +6,11 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
-import static net.turniptales.discord.TurnipTalesDiscord.TURNIPTALES_BOT;
+import static net.turniptales.discord.TurnipTalesDiscord.turniptalesBot;
 
 public class Config {
 
-    public static final Guild GUILD = TURNIPTALES_BOT.getGuildById("1008928645185810463");
+    public static final Guild GUILD = turniptalesBot.getGuildById("1008928645185810463");
     public static final Member BOT;
     // channels
     public static final TextChannel COMMUNITY_TEXT_CHANNEL = GUILD.getTextChannelById("1008929885764472952");

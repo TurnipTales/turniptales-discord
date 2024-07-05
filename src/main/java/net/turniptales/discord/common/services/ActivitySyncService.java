@@ -10,7 +10,7 @@ import java.util.TimerTask;
 import static java.lang.System.currentTimeMillis;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static net.dv8tion.jda.api.entities.Activity.playing;
-import static net.turniptales.discord.TurnipTalesDiscord.TURNIPTALES_BOT;
+import static net.turniptales.discord.TurnipTalesDiscord.turniptalesBot;
 
 @Log4j2
 @Component
@@ -26,7 +26,7 @@ public class ActivitySyncService {
                 log.info("Activity synchronising: started");
 
                 Activity activity = playing("auf TurnipTales.net");
-                TURNIPTALES_BOT.getPresence().setActivity(activity);
+                turniptalesBot.getPresence().setActivity(activity);
 
                 log.info("Activity synchronising: finished in {}ms", currentTimeMillis() - startTime);
             }

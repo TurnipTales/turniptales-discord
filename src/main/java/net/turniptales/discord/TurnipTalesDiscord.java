@@ -8,6 +8,7 @@ import net.turniptales.discord.commands.StatsCommand;
 import net.turniptales.discord.commands.SurveyCommand;
 import net.turniptales.discord.commands.TicketCommand;
 import net.turniptales.discord.commands.VerifyCommand;
+import net.turniptales.discord.common.api.Api;
 import net.turniptales.discord.events.ButtonInteractionListener;
 import net.turniptales.discord.events.GuildMemberJoinListener;
 import net.turniptales.discord.events.GuildMemberRemoveListener;
@@ -33,21 +34,23 @@ import static net.dv8tion.jda.api.utils.cache.CacheFlag.VOICE_STATE;
 @SpringBootApplication
 public class TurnipTalesDiscord implements WebMvcConfigurer {
 
-    public static JDA TURNIPTALES_BOT;
-    public static ZoneId ZONE_ID;
+    public static final ZoneId ZONE_ID = of("Europe/Berlin");
+    public static JDA turniptalesBot;
+    public static Api api;
 
     public static void main(String[] args) {
         SpringApplication.run(TurnipTalesDiscord.class, args);
-        ZONE_ID = of("Europe/Berlin");
 
         long discordBotStartTime = currentTimeMillis();
         log.info("Discord bot starting");
         startDiscordBot();
         log.info("Discord bot started in {}ms", currentTimeMillis() - discordBotStartTime);
+
+        api = new Api();
     }
 
     private static void startDiscordBot() {
-        TURNIPTALES_BOT = JDABuilder
+        turniptalesBot = JDABuilder
                 .createDefault("MTE5MDcxNDY0MzU1MTg5MTQ3OA.GdvTJE.EMI9oOxjzEe-unfAXWPtOKgb2qGtWkqonPq5OY")
                 .disableCache(MEMBER_OVERRIDES, VOICE_STATE) // Disable parts of the cache
                 .setBulkDeleteSplittingEnabled(false) // Enable the bulk delete event
@@ -70,12 +73,12 @@ public class TurnipTalesDiscord implements WebMvcConfigurer {
                 )
                 .build();
 
-        TURNIPTALES_BOT
+        turniptalesBot
                 .upsertCommand("stats", "Deine Statistiken (nicht öffentlich) oder die eines Discord Nutzers (öffentlich)")
                 .addOption(USER, "player", "Discord Nutzer dessen Statistiken angezeigt werden sollen (Discord Nutzer muss sich verknüpft haben)", false)
                 .queue();
 
-        TURNIPTALES_BOT
+        turniptalesBot
                 .upsertCommand("umfrage", "Erstellt eine Umfrage")
                 .addOption(STRING, "question", "Frage", true)
                 .addOption(STRING, "description", "Beschreibung", true)
@@ -86,16 +89,16 @@ public class TurnipTalesDiscord implements WebMvcConfigurer {
                 .addOption(STRING, "answer5", "Antwort 5", false)
                 .queue();
 
-        TURNIPTALES_BOT
+        turniptalesBot
                 .upsertCommand("ticket", "Erstellt die Nachricht um Tickets zu erstellen")
                 .queue();
 
-        TURNIPTALES_BOT
+        turniptalesBot
                 .upsertCommand("verify", "Verifiziert deinen Minecraft Account")
                 .addOption(STRING, "code", "Verifizierungscode", true)
                 .queue();
 
-        TURNIPTALES_BOT
+        turniptalesBot
                 .upsertCommand("giveaway", "Lost einen Spieler anhand der Reaktionen einer Nachricht aus")
                 .addOption(STRING, "message", "Nachricht mit den Reaktionen", true)
                 .queue();
