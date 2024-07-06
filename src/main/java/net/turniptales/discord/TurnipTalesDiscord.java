@@ -35,7 +35,7 @@ import static net.dv8tion.jda.api.utils.cache.CacheFlag.VOICE_STATE;
 public class TurnipTalesDiscord implements WebMvcConfigurer {
 
     public static final ZoneId ZONE_ID = of("Europe/Berlin");
-    public static JDA turniptalesBot;
+    public static JDA discordBot;
     public static Api api;
 
     public static void main(String[] args) {
@@ -50,7 +50,7 @@ public class TurnipTalesDiscord implements WebMvcConfigurer {
     }
 
     private static void startDiscordBot() {
-        turniptalesBot = JDABuilder
+        discordBot = JDABuilder
                 .createDefault("MTE5MDcxNDY0MzU1MTg5MTQ3OA.GdvTJE.EMI9oOxjzEe-unfAXWPtOKgb2qGtWkqonPq5OY")
                 .disableCache(MEMBER_OVERRIDES, VOICE_STATE) // Disable parts of the cache
                 .setBulkDeleteSplittingEnabled(false) // Enable the bulk delete event
@@ -73,12 +73,12 @@ public class TurnipTalesDiscord implements WebMvcConfigurer {
                 )
                 .build();
 
-        turniptalesBot
+        discordBot
                 .upsertCommand("stats", "Deine Statistiken (nicht öffentlich) oder die eines Discord Nutzers (öffentlich)")
                 .addOption(USER, "player", "Discord Nutzer dessen Statistiken angezeigt werden sollen (Discord Nutzer muss sich verknüpft haben)", false)
                 .queue();
 
-        turniptalesBot
+        discordBot
                 .upsertCommand("umfrage", "Erstellt eine Umfrage")
                 .addOption(STRING, "question", "Frage", true)
                 .addOption(STRING, "description", "Beschreibung", true)
@@ -89,16 +89,16 @@ public class TurnipTalesDiscord implements WebMvcConfigurer {
                 .addOption(STRING, "answer5", "Antwort 5", false)
                 .queue();
 
-        turniptalesBot
+        discordBot
                 .upsertCommand("ticket", "Erstellt die Nachricht um Tickets zu erstellen")
                 .queue();
 
-        turniptalesBot
+        discordBot
                 .upsertCommand("verify", "Verifiziert deinen Minecraft Account")
                 .addOption(STRING, "code", "Verifizierungscode", true)
                 .queue();
 
-        turniptalesBot
+        discordBot
                 .upsertCommand("giveaway", "Lost einen Spieler anhand der Reaktionen einer Nachricht aus")
                 .addOption(STRING, "message", "Nachricht mit den Reaktionen", true)
                 .queue();
