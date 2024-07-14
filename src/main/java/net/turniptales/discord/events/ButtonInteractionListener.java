@@ -72,7 +72,7 @@ public class ButtonInteractionListener extends ListenerAdapter {
                         .build();
 
                 Modal ticketModal = create("ticket_modal", "Neues Ticket")
-                        .addActionRows(ActionRow.of(minecraftNameTextInput), ActionRow.of(logInput))
+                        .addComponents(ActionRow.of(minecraftNameTextInput), ActionRow.of(logInput))
                         .build();
 
                 e.replyModal(ticketModal).queue();
