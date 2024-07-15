@@ -9,6 +9,7 @@ import net.turniptales.discord.commands.SurveyCommand;
 import net.turniptales.discord.commands.TicketCommand;
 import net.turniptales.discord.commands.VerifyCommand;
 import net.turniptales.discord.common.api.Api;
+import net.turniptales.discord.common.configuration.DiscordBotProperties;
 import net.turniptales.discord.events.ButtonInteractionListener;
 import net.turniptales.discord.events.GuildMemberJoinListener;
 import net.turniptales.discord.events.GuildMemberRemoveListener;
@@ -16,6 +17,7 @@ import net.turniptales.discord.events.GuildMemberUpdateBoostTimeListener;
 import net.turniptales.discord.events.MessageReactionListener;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.time.ZoneId;
@@ -36,10 +38,13 @@ public class TurnipTalesDiscord implements WebMvcConfigurer {
 
     public static final ZoneId ZONE_ID = of("Europe/Berlin");
     public static JDA discordBot;
+    public static DiscordBotProperties discordBotProperties;
     public static Api api;
 
     public static void main(String[] args) {
-        SpringApplication.run(TurnipTalesDiscord.class, args);
+        ConfigurableApplicationContext context = SpringApplication.run(TurnipTalesDiscord.class, args);
+
+        discordBotProperties = context.getBean(DiscordBotProperties.class);
 
         long discordBotStartTime = currentTimeMillis();
         log.info("Discord bot starting");
@@ -51,7 +56,7 @@ public class TurnipTalesDiscord implements WebMvcConfigurer {
 
     private static void startDiscordBot() {
         discordBot = JDABuilder
-                .createDefault("MTE5MDcxNDY0MzU1MTg5MTQ3OA.GdvTJE.EMI9oOxjzEe-unfAXWPtOKgb2qGtWkqonPq5OY")
+                .createDefault(discordBotProperties.getToken())
                 .disableCache(MEMBER_OVERRIDES, VOICE_STATE) // Disable parts of the cache
                 .setBulkDeleteSplittingEnabled(false) // Enable the bulk delete event
                 .setCompression(NONE) // Disable compression (not recommended)

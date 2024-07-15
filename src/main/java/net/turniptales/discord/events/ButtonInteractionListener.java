@@ -1,6 +1,8 @@
 package net.turniptales.discord.events;
 
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -10,7 +12,6 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
-import net.turniptales.discord.Config;
 
 import java.util.EnumSet;
 import java.util.Objects;
@@ -24,11 +25,7 @@ import static net.dv8tion.jda.api.interactions.components.buttons.Button.seconda
 import static net.dv8tion.jda.api.interactions.components.buttons.Button.success;
 import static net.dv8tion.jda.api.interactions.components.text.TextInputStyle.PARAGRAPH;
 import static net.dv8tion.jda.api.interactions.modals.Modal.create;
-import static net.turniptales.discord.Config.GUILD;
-import static net.turniptales.discord.Config.MODERATOR_ROLE;
-import static net.turniptales.discord.Config.SENIOR_MODERATOR_ROLE;
-import static net.turniptales.discord.Config.SUPPORTER_ROLE;
-import static net.turniptales.discord.Config.TICKET_CATEGORY;
+import static net.turniptales.discord.TurnipTalesDiscord.discordBotProperties;
 import static net.turniptales.discord.commands.GiveawayCommand.giveaways;
 import static net.turniptales.discord.commands.SurveyCommand.pendingSurveys;
 
@@ -37,6 +34,7 @@ public class ButtonInteractionListener extends ListenerAdapter {
     @Override
     public void onButtonInteraction(ButtonInteractionEvent e) {
         String componentId = e.getComponentId();
+        Category ticketCategory = discordBotProperties.getTicketCategory();
 
         switch (componentId) {
             case "createTicketAddButton" -> {
@@ -44,12 +42,8 @@ public class ButtonInteractionListener extends ListenerAdapter {
                 assert member != null;
                 String memberId = member.getId();
 
-                assert TICKET_CATEGORY != null;
-                boolean hasTicketChannel = TICKET_CATEGORY.getChannels().stream()
-                        .map(guildChannel -> {
-                            assert GUILD != null;
-                            return GUILD.getTextChannelById(guildChannel.getId());
-                        })
+                boolean hasTicketChannel = ticketCategory.getChannels().stream()
+                        .map(guildChannel -> discordBotProperties.getGuild().getTextChannelById(guildChannel.getId()))
                         .filter(Objects::nonNull)
                         .map(StandardGuildMessageChannel::getTopic)
                         .filter(Objects::nonNull)
@@ -79,7 +73,7 @@ public class ButtonInteractionListener extends ListenerAdapter {
             }
             case "closeTicket" -> {
                 TextChannel textChannel = e.getChannel().asTextChannel();
-                if (Objects.equals(textChannel.getParentCategory(), TICKET_CATEGORY) && textChannel.getName().startsWith("ticket-")) {
+                if (Objects.equals(textChannel.getParentCategory(), ticketCategory) && textChannel.getName().startsWith("ticket-")) {
                     e.reply("Möchtest Du das Ticket wirklich schließen?")
                             .addActionRow(danger("closeTicketConfirm", "Bestätigen"), secondary("closeTicketAbort", "Abbrechen"))
                             .queue();
@@ -87,7 +81,7 @@ public class ButtonInteractionListener extends ListenerAdapter {
             }
             case "closeTicketConfirm" -> {
                 TextChannel textChannel = e.getChannel().asTextChannel();
-                if (Objects.equals(textChannel.getParentCategory(), TICKET_CATEGORY) && textChannel.getName().startsWith("ticket-")) {
+                if (Objects.equals(textChannel.getParentCategory(), ticketCategory) && textChannel.getName().startsWith("ticket-")) {
                     textChannel.delete().queue();
                 }
             }
@@ -97,8 +91,7 @@ public class ButtonInteractionListener extends ListenerAdapter {
                 assert member != null;
 
                 ofNullable(pendingSurveys.remove(member)).ifPresentOrElse(survey -> {
-                    assert Config.SURVEY_TEXT_CHANNEL != null;
-                    Config.SURVEY_TEXT_CHANNEL.sendMessage("@everyone").setEmbeds(survey.toEmbed(member))
+                    discordBotProperties.getSurveyTextChannel().sendMessage("@everyone").setEmbeds(survey.toEmbed(member))
                             .queue(message -> survey.getReactions().forEach(emoji -> message.addReaction(emoji).queue()));
 
                     e.reply("Umfrage veröffentlicht!").setEphemeral(true).queue();
@@ -130,19 +123,17 @@ public class ButtonInteractionListener extends ListenerAdapter {
                 String minecraftName = e.getValue("minecraft_name_input").getAsString();
                 String log = e.getValue("topic_input").getAsString();
 
-                assert GUILD != null;
-                assert SENIOR_MODERATOR_ROLE != null;
-                assert MODERATOR_ROLE != null;
-                assert SUPPORTER_ROLE != null;
-                TICKET_CATEGORY.createTextChannel("ticket-" + userName)
+                Role supporterRole = discordBotProperties.getSupporterRole();
+                Role moderatorRole = discordBotProperties.getModeratorRole();
+                discordBotProperties.getTicketCategory().createTextChannel("ticket-" + userName)
                         .setTopic("Ticket von " + userName + " (" + memberId + ")")
-                        .addPermissionOverride(GUILD.getPublicRole(), null, EnumSet.of(VIEW_CHANNEL))
+                        .addPermissionOverride(discordBotProperties.getGuild().getPublicRole(), null, EnumSet.of(VIEW_CHANNEL))
                         .addPermissionOverride(member, EnumSet.of(VIEW_CHANNEL), null)
-                        .addPermissionOverride(SENIOR_MODERATOR_ROLE, EnumSet.of(VIEW_CHANNEL), null)
-                        .addPermissionOverride(MODERATOR_ROLE, EnumSet.of(VIEW_CHANNEL), null)
-                        .addPermissionOverride(SUPPORTER_ROLE, EnumSet.of(VIEW_CHANNEL), null)
+                        .addPermissionOverride(discordBotProperties.getSeniorModeratorRole(), EnumSet.of(VIEW_CHANNEL), null)
+                        .addPermissionOverride(moderatorRole, EnumSet.of(VIEW_CHANNEL), null)
+                        .addPermissionOverride(supporterRole, EnumSet.of(VIEW_CHANNEL), null)
                         .queue(textChannel -> textChannel
-                                .sendMessage("Hey " + member.getAsMention() + "! Danke dass du ein Ticket erstellt hast. Die " + SUPPORTER_ROLE.getAsMention() + " und " + MODERATOR_ROLE.getAsMention() + " werden Dir schnellstmöglich deine Frage beantworten oder Dir helfen.\n"
+                                .sendMessage("Hey " + member.getAsMention() + "! Danke dass du ein Ticket erstellt hast. Die " + supporterRole.getAsMention() + " und " + moderatorRole.getAsMention() + " werden Dir schnellstmöglich deine Frage beantworten oder Dir helfen.\n"
                                         + "Spieler:  " + minecraftName + "\n"
                                         + "Anliegen: " + log)
                                 .addActionRow(success("closeTicket", "Ticket schließen").withEmoji(fromUnicode("U+1F512")))
