@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.turniptales.discord.common.api.model.ConnectionDataValue;
 import net.turniptales.discord.common.api.model.PunishmentData;
@@ -22,40 +21,41 @@ import static java.lang.String.valueOf;
 import static java.util.Locale.US;
 import static java.util.Objects.nonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static net.turniptales.discord.Config.BOT;
 import static net.turniptales.discord.TurnipTalesDiscord.api;
+import static net.turniptales.discord.TurnipTalesDiscord.discordBot;
 
-public class StatsCommand extends ListenerAdapter {
+public class StatsCommand extends CommandBase {
 
     public static final DecimalFormatSymbols US_SYMBOLS = DecimalFormatSymbols.getInstance(US);
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("###.##", US_SYMBOLS);
 
+    public StatsCommand() {
+        super("stats");
+    }
+
     @Override
-    public void onSlashCommandInteraction(SlashCommandInteractionEvent e) {
-        if (!e.getName().equals("stats")) {
-            return;
-        }
+    public void onCommand(SlashCommandInteractionEvent event) {
+        OptionMapping playerOptionMapping = event.getOption("player");
 
-        OptionMapping playerOptionMapping = e.getOption("player");
-
-        Member member = e.getMember();
+        Member member = event.getMember();
+        String userId = event.getUser().getId();
         if (nonNull(playerOptionMapping)) {
             try {
-                ConnectionDataValue connectionDataValue = api.getData(e.getUser().getId());
-                MessageEmbed publicPlayerStats = isTicketChannel(e.getChannel()) ? getPrivatePlayerStats(connectionDataValue, member) : getPublicPlayerStats(connectionDataValue, member);
-                e.replyEmbeds(publicPlayerStats).queue();
+                ConnectionDataValue connectionDataValue = api.getData(userId);
+                MessageEmbed publicPlayerStats = isTicketChannel(event.getChannel()) ? getPrivatePlayerStats(connectionDataValue, member) : getPublicPlayerStats(connectionDataValue, member);
+                event.replyEmbeds(publicPlayerStats).queue();
             } catch (Exception ex) {
-                e.reply("Der angegebene Spieler hat seinen Minecraft Account noch nicht verknüpft.").setEphemeral(true).queue();
-                e.getHook().deleteOriginal().queueAfter(5, SECONDS);
+                event.reply("Der angegebene Spieler hat seinen Minecraft Account noch nicht verknüpft.").setEphemeral(true).queue();
+                event.getHook().deleteOriginal().queueAfter(5, SECONDS);
             }
         } else {
             try {
-                ConnectionDataValue connectionDataValue = api.getData(e.getUser().getId());
+                ConnectionDataValue connectionDataValue = api.getData(userId);
                 MessageEmbed privatePlayerStats = getPrivatePlayerStats(connectionDataValue, member);
-                e.replyEmbeds(privatePlayerStats).setEphemeral(true).queue();
+                event.replyEmbeds(privatePlayerStats).setEphemeral(true).queue();
             } catch (Exception ex) {
-                e.reply("Du hast deinen Minecraft Account noch nicht verknüpft.").setEphemeral(true).queue();
-                e.getHook().deleteOriginal().queueAfter(5, SECONDS);
+                event.reply("Du hast deinen Minecraft Account noch nicht verknüpft.").setEphemeral(true).queue();
+                event.getHook().deleteOriginal().queueAfter(5, SECONDS);
             }
         }
     }
@@ -95,11 +95,10 @@ public class StatsCommand extends ListenerAdapter {
     }
 
     private EmbedBuilder getDefaultEmbedBuilder(ConnectionDataValue connectionDataValue, Member member) {
-        assert BOT != null;
         return new EmbedBuilder()
                 .setColor(CYAN)
                 .setThumbnail("https://minotar.net/helm/" + connectionDataValue.getMinecraftUuid() + "/300.png")
-                .setAuthor("TurnipTales", "https://turniptales.net/", BOT.getEffectiveAvatarUrl())
+                .setAuthor("TurnipTales", "https://turniptales.net/", discordBot.getSelfUser().getEffectiveAvatarUrl())
                 .setTitle("Statistiken von " + connectionDataValue.getMinecraftName())
                 .setDescription("**Role**: " + connectionDataValue.getRole())
                 .setFooter(member.getEffectiveName(), member.getEffectiveAvatarUrl())

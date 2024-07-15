@@ -1,7 +1,6 @@
 package net.turniptales.discord.commands;
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.turniptales.discord.common.api.model.ConnectionDataValue;
 import org.springframework.http.ResponseEntity;
@@ -10,21 +9,21 @@ import static java.util.Objects.isNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static net.turniptales.discord.TurnipTalesDiscord.api;
 
-public class VerifyCommand extends ListenerAdapter {
+public class VerifyCommand extends CommandBase {
+
+    public VerifyCommand() {
+        super("verify");
+    }
 
     @Override
-    public void onSlashCommandInteraction(SlashCommandInteractionEvent e) {
-        if (!e.getName().equals("verify")) {
-            return;
-        }
-
-        OptionMapping codeOptionMapping = e.getOption("code");
+    public void onCommand(SlashCommandInteractionEvent event) {
+        OptionMapping codeOptionMapping = event.getOption("code");
         if (isNull(codeOptionMapping)) {
-            e.reply("Gib einen Verifizierungscode an!").setEphemeral(true).queue();
+            event.reply("Gib einen Verifizierungscode an!").setEphemeral(true).queue();
             return;
         }
 
-        String accountUserId = e.getUser().getId();
+        String accountUserId = event.getUser().getId();
         ResponseEntity<String> response = api.connect(accountUserId, codeOptionMapping.getAsString());
         boolean success = response.getStatusCode().is2xxSuccessful();
 
@@ -36,7 +35,7 @@ public class VerifyCommand extends ListenerAdapter {
             message = "Dein Discord Account konnte nicht mit deinem Minecraft Account verknüpft werden.";
         }
 
-        e.reply(message).setEphemeral(true).queue();
-        e.getHook().deleteOriginal().queueAfter(5, SECONDS);
+        event.reply(message).setEphemeral(true).queue();
+        event.getHook().deleteOriginal().queueAfter(5, SECONDS);
     }
 }

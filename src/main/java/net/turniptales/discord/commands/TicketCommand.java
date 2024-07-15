@@ -2,35 +2,31 @@ package net.turniptales.discord.commands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.turniptales.discord.Config;
 
 import java.awt.Color;
-import java.util.Objects;
 
-import static net.dv8tion.jda.api.Permission.ADMINISTRATOR;
 import static net.dv8tion.jda.api.entities.emoji.Emoji.fromUnicode;
 import static net.dv8tion.jda.api.interactions.components.buttons.Button.success;
+import static net.turniptales.discord.TurnipTalesDiscord.discordBotProperties;
 
-public class TicketCommand extends ListenerAdapter {
+public class TicketCommand extends CommandBase {
+
+    public TicketCommand() {
+        super("ticket");
+    }
 
     @Override
-    public void onSlashCommandInteraction(SlashCommandInteractionEvent e) {
-        if (!e.getName().equals("ticket") || !Objects.requireNonNull(e.getMember()).hasPermission(ADMINISTRATOR)) {
-            return;
-        }
-
-        e.deferReply(true).queue();
+    public void onCommand(SlashCommandInteractionEvent event) {
+        event.deferReply(true).queue();
         EmbedBuilder embedBuilder = new EmbedBuilder()
                 .setColor(new Color(0x609fee))
                 .setTitle("Ticket")
                 .addField("🎫 **Hier kannst du ein Ticket erstellen um schnell Hilfe zu erhalten oder sonstige Fragen zu klären.**", "Bei der Erstellung eines Tickets wirst du nach deinem Minecraft Namen und Anliegen gefragt.", false);
 
-        assert Config.TICKET_TEXT_CHANNEL != null;
-        Config.TICKET_TEXT_CHANNEL
+        discordBotProperties.getTicketTextChannel()
                 .sendMessageEmbeds(embedBuilder.build())
                 .addActionRow(success("createTicketAddButton", "Neues Ticket").withEmoji(fromUnicode("U+1F3AB")))
                 .queue();
-        e.getHook().deleteOriginal().queue();
+        event.getHook().deleteOriginal().queue();
     }
 }

@@ -22,7 +22,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static net.dv8tion.jda.api.Permission.ADMINISTRATOR;
 import static net.dv8tion.jda.api.entities.emoji.Emoji.fromUnicode;
 import static net.dv8tion.jda.api.interactions.components.buttons.Button.success;
-import static net.turniptales.discord.Config.BOT;
+import static net.turniptales.discord.TurnipTalesDiscord.discordBot;
 
 public class SurveyCommand extends ListenerAdapter {
 
@@ -51,7 +51,6 @@ public class SurveyCommand extends ListenerAdapter {
             Survey survey = new Survey(questionOptionMapping.getAsString(), descriptionOptionMapping.getAsString(), answers);
 
             Member member = e.getMember();
-            assert BOT != null;
 
             pendingSurveys.put(member, survey);
 
@@ -77,7 +76,7 @@ public class SurveyCommand extends ListenerAdapter {
             EmbedBuilder embedBuilder = new EmbedBuilder()
                     .setColor(CYAN)
                     .setTitle(this.title)
-                    .setAuthor("TurnipTales", "https://turniptales.net/", BOT.getEffectiveAvatarUrl())
+                    .setAuthor("TurnipTales", "https://turniptales.net/", discordBot.getSelfUser().getEffectiveAvatarUrl())
                     .setDescription(this.description)
                     .setFooter("Umfrage erstellt von " + member.getEffectiveName(), member.getEffectiveAvatarUrl())
                     .setTimestamp(new Date().toInstant());
