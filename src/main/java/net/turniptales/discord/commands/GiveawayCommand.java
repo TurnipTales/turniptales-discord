@@ -5,7 +5,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import java.util.ArrayList;
@@ -17,28 +16,28 @@ import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import static java.lang.System.currentTimeMillis;
 import static java.util.Objects.nonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static net.dv8tion.jda.api.Permission.ADMINISTRATOR;
 import static net.dv8tion.jda.api.interactions.components.buttons.Button.success;
 
 @Log4j2
-public class GiveawayCommand extends ListenerAdapter {
+public class GiveawayCommand extends CommandBase {
 
     public static final Map<User, Giveaway> giveaways = new HashMap<>();
 
-    @Override
-    public void onSlashCommandInteraction(SlashCommandInteractionEvent e) {
-        if (!e.getName().equals("giveaway") || !Objects.requireNonNull(e.getMember()).hasPermission(ADMINISTRATOR)) {
-            return;
-        }
+    public GiveawayCommand(String name) {
+        super(name);
+    }
 
-        OptionMapping messageOptionMapping = e.getOption("message");
+    @Override
+    public void onCommand(SlashCommandInteractionEvent event) {
+        OptionMapping messageOptionMapping = event.getOption("message");
 
         if (nonNull(messageOptionMapping)) {
-            e.deferReply().setEphemeral(true).queue();
+            event.deferReply().setEphemeral(true).queue();
 
-            Message message = e.getChannel().retrieveMessageById(messageOptionMapping.getAsString()).complete();
+            Message message = event.getChannel().retrieveMessageById(messageOptionMapping.getAsString()).complete();
             List<MessageReaction> reactions = message.getReactions();
             List<User> usersWhoReacted = getUsersWhoReacted(reactions);
 
@@ -51,15 +50,15 @@ public class GiveawayCommand extends ListenerAdapter {
                     .toList().get(new Random().nextInt(uniqueUsers.size()));
 
             Giveaway giveaway = new Giveaway(message, uniqueUsers, winner);
-            giveaways.put(e.getUser(), giveaway);
+            giveaways.put(event.getUser(), giveaway);
 
-            e.getHook()
+            event.getHook()
                     .sendMessage("Reaktionen: " + usersWhoReacted.size() + " (" + reactions.size() + ")\nNutzer: " + uniqueUsers.size() + "\n\nGewinner: " + winner.getAsMention())
                     .addActionRow(success("publishWinner", "Gewinner veröffentlichen"))
                     .queue();
         } else {
-            e.reply("Es muss eine Nachrichten ID angegeben werden.").setEphemeral(true).queue();
-            e.getHook().deleteOriginal().queueAfter(5, SECONDS);
+            event.reply("Es muss eine Nachrichten ID angegeben werden.\n-# 🚮 <t:" + (currentTimeMillis() / 1000 + 10) + ":R>").setEphemeral(true).queue();
+            event.getHook().deleteOriginal().queueAfter(10, SECONDS);
         }
     }
 

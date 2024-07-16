@@ -6,8 +6,8 @@ import static net.turniptales.discord.TurnipTalesDiscord.discordBotProperties;
 
 public class RolesCommand extends CommandBase {
 
-    public RolesCommand() {
-        super("rollen");
+    public RolesCommand(String name) {
+        super(name);
     }
 
     @Override

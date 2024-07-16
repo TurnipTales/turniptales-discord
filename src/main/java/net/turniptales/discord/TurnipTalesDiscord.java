@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.turniptales.discord.buttons.GiveawayWinnerPublishButton;
 import net.turniptales.discord.buttons.SyncButton;
 import net.turniptales.discord.buttons.TicketCloseAbortButton;
@@ -12,11 +13,9 @@ import net.turniptales.discord.buttons.TicketCloseButton;
 import net.turniptales.discord.buttons.TicketCloseConfirmButton;
 import net.turniptales.discord.buttons.TicketCreateButton;
 import net.turniptales.discord.commands.GiveawayCommand;
+import net.turniptales.discord.commands.MessageCommand;
 import net.turniptales.discord.commands.RolesCommand;
 import net.turniptales.discord.commands.StatsCommand;
-import net.turniptales.discord.commands.TestCommand;
-import net.turniptales.discord.commands.TicketCommand;
-import net.turniptales.discord.commands.VerifyCommand;
 import net.turniptales.discord.common.api.Api;
 import net.turniptales.discord.common.configuration.DiscordBotProperties;
 import net.turniptales.discord.events.GuildAccessListener;
@@ -30,6 +29,7 @@ import java.time.ZoneId;
 import static java.lang.System.currentTimeMillis;
 import static java.time.ZoneId.of;
 import static net.dv8tion.jda.api.Permission.ADMINISTRATOR;
+import static net.dv8tion.jda.api.Permission.VIEW_AUDIT_LOGS;
 import static net.dv8tion.jda.api.interactions.commands.OptionType.STRING;
 import static net.dv8tion.jda.api.interactions.commands.OptionType.USER;
 import static net.dv8tion.jda.api.requests.GatewayIntent.GUILD_MEMBERS;
@@ -69,11 +69,10 @@ public class TurnipTalesDiscord implements WebMvcConfigurer {
                 .enableIntents(MESSAGE_CONTENT)
                 .enableIntents(GUILD_MEMBERS)
                 .addEventListeners(
-                        new GiveawayCommand(),
-                        new RolesCommand(),
-                        new StatsCommand(),
-                        new TicketCommand(),
-                        new VerifyCommand()
+                        new GiveawayCommand("giveaway"),
+                        new MessageCommand("nachricht"),
+                        new RolesCommand("rollen"),
+                        new StatsCommand("statistik")
                 )
                 .addEventListeners(
                         new GuildAccessListener()
@@ -89,17 +88,23 @@ public class TurnipTalesDiscord implements WebMvcConfigurer {
                 .build().awaitReady();
 
         discordBotProperties.getGuild().updateCommands().addCommands(
-                Commands.slash("rollen", "Informationen zu den Rollen auf diesem Discord"),
-                Commands.slash("stats", "Deine Statistiken (nicht öffentlich) oder die eines Discord Nutzers (öffentlich)")
-                        .addOption(USER, "player", "Discord Nutzer dessen Statistiken angezeigt werden sollen (Discord Nutzer muss sich verknüpft haben)", false),
-                Commands.slash("verify", "Verifiziert deinen Minecraft Account")
-                        .addOption(STRING, "code", "Verifizierungscode", true),
-
-                Commands.slash("ticket", "Erstellt die Nachricht um Tickets zu erstellen")
+                // only administrator
+                Commands.slash("nachricht", "Nachrichten Vorlagen")
+                        .addSubcommands(
+                                new SubcommandData("sync", "Nachrichten Vorlage für die Synchronisierung"),
+                                new SubcommandData("ticket", "Nachrichten Vorlage für Tickets"))
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(ADMINISTRATOR)),
+
+                // only supporter, moderator, senior-moderator
                 Commands.slash("giveaway", "Lost einen Spieler anhand der Reaktionen einer Nachricht aus")
                         .addOption(STRING, "message", "Nachricht mit den Reaktionen", true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(ADMINISTRATOR))
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(VIEW_AUDIT_LOGS)),
+                Commands.slash("rollen", "Informationen zu den Rollen auf diesem Discord")
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(VIEW_AUDIT_LOGS)),
+
+                // everyone
+                Commands.slash("statistik", "Deine Statistiken (nicht öffentlich) oder die eines anderen Nutzers (öffentlich)")
+                        .addOption(USER, "player", "Discord Nutzer dessen Statistiken angezeigt werden sollen (Discord Nutzer muss sich verknüpft haben)", false)
         ).queue();
     }
 }

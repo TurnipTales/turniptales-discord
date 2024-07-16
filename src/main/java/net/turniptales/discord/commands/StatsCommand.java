@@ -31,8 +31,8 @@ public class StatsCommand extends CommandBase {
     public static final DecimalFormatSymbols US_SYMBOLS = DecimalFormatSymbols.getInstance(US);
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("###.##", US_SYMBOLS);
 
-    public StatsCommand() {
-        super("stats");
+    public StatsCommand(String name) {
+        super(name);
     }
 
     @Override
