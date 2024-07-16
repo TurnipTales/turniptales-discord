@@ -41,6 +41,15 @@ public class DiscordBotProperties {
     @Value("${discord.guild.roles.supporter-role}")
     private String supporterRole;
 
+    @Value("${discord.guild.roles.team-builder-role}")
+    private String teamBuilderRole;
+
+    @Value("${discord.guild.roles.team-content-role}")
+    private String teamContentRole;
+
+    @Value("${discord.guild.roles.team-social-media-role}")
+    private String teamSocialMediaRole;
+
     @Value("${discord.guild.roles.role-0}")
     private String role0;
 
@@ -98,6 +107,18 @@ public class DiscordBotProperties {
 
     public Role getSupporterRole() {
         return getGuild().getRoleById(this.supporterRole);
+    }
+
+    public Role getTeamBuilderRole() {
+        return getGuild().getRoleById(this.teamBuilderRole);
+    }
+
+    public Role getTeamContentRole() {
+        return getGuild().getRoleById(this.teamContentRole);
+    }
+
+    public Role getTeamSocialMediaRole() {
+        return getGuild().getRoleById(this.teamSocialMediaRole);
     }
 
     public Role getRole0() {

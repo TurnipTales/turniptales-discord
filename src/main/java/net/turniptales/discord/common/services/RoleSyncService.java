@@ -14,13 +14,11 @@ import java.util.TimerTask;
 import static java.lang.System.currentTimeMillis;
 import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.concurrent.TimeUnit.HOURS;
+import static net.turniptales.discord.TurnipTalesDiscord.discordBotProperties;
 
 @Log4j2
 @Component
 public class RoleSyncService {
-
-    private final DiscordBotProperties discordBotProperties;
-    private List<Role> stayRoles;
 
     public RoleSyncService(DiscordBotProperties discordBotProperties) {
         long sixHoursInMillis = HOURS.toMillis(6);
@@ -28,25 +26,13 @@ public class RoleSyncService {
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                RoleSyncService.this.stayRoles = List.of(
-                        discordBotProperties.getRole0(),
-                        discordBotProperties.getRole1Week(),
-                        discordBotProperties.getRole2Week(),
-                        discordBotProperties.getRole1Month(),
-                        discordBotProperties.getRole3Month(),
-                        discordBotProperties.getRole6Month(),
-                        discordBotProperties.getRole1Year(),
-                        discordBotProperties.getRole2Year(),
-                        discordBotProperties.getRole3Year()
-                );
-
                 long startTime = currentTimeMillis();
                 log.info("Discord role synchronising: started");
 
                 Guild guild = discordBotProperties.getGuild();
                 guild.loadMembers().get().forEach(member -> {
-                    Role highestRoleUserShouldHave = getHighestRoleUserShouldHave(member.getTimeJoined());
-                    RoleSyncService.this.stayRoles.stream()
+                    Role highestRoleUserShouldHave = getHighestTimeRole(member.getTimeJoined());
+                    getTimeRoles().stream()
                             .filter(role -> !role.equals(highestRoleUserShouldHave))
                             .filter(role -> member.getRoles().contains(role))
                             .forEach(role -> {
@@ -66,10 +52,23 @@ public class RoleSyncService {
             }
         }, (sixHoursInMillis - currentTimeMillis() % sixHoursInMillis) + HOURS.toMillis(2), sixHoursInMillis); // 4 10 16 22
         log.info("Discord role synchronising: scheduled");
-        this.discordBotProperties = discordBotProperties;
     }
 
-    private Role getHighestRoleUserShouldHave(OffsetDateTime timeJoined) {
+    public static List<Role> getTimeRoles() {
+        return List.of(
+                discordBotProperties.getRole0(),
+                discordBotProperties.getRole1Week(),
+                discordBotProperties.getRole2Week(),
+                discordBotProperties.getRole1Month(),
+                discordBotProperties.getRole3Month(),
+                discordBotProperties.getRole6Month(),
+                discordBotProperties.getRole1Year(),
+                discordBotProperties.getRole2Year(),
+                discordBotProperties.getRole3Year()
+        );
+    }
+
+    public static Role getHighestTimeRole(OffsetDateTime timeJoined) {
         Role role = discordBotProperties.getRole0();
 
         long joinTimeInMillis = timeJoined.toInstant().toEpochMilli();

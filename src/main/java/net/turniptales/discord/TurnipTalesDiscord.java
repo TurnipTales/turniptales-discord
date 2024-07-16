@@ -3,7 +3,6 @@ package net.turniptales.discord;
 import lombok.extern.log4j.Log4j2;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.turniptales.discord.buttons.GiveawayWinnerPublishButton;
@@ -16,6 +15,7 @@ import net.turniptales.discord.commands.GiveawayCommand;
 import net.turniptales.discord.commands.MessageCommand;
 import net.turniptales.discord.commands.RolesCommand;
 import net.turniptales.discord.commands.StatsCommand;
+import net.turniptales.discord.commands.SyncPermissionCommand;
 import net.turniptales.discord.common.api.Api;
 import net.turniptales.discord.common.configuration.DiscordBotProperties;
 import net.turniptales.discord.events.GuildAccessListener;
@@ -30,6 +30,7 @@ import static java.lang.System.currentTimeMillis;
 import static java.time.ZoneId.of;
 import static net.dv8tion.jda.api.Permission.ADMINISTRATOR;
 import static net.dv8tion.jda.api.Permission.VIEW_AUDIT_LOGS;
+import static net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions.enabledFor;
 import static net.dv8tion.jda.api.interactions.commands.OptionType.STRING;
 import static net.dv8tion.jda.api.interactions.commands.OptionType.USER;
 import static net.dv8tion.jda.api.requests.GatewayIntent.GUILD_MEMBERS;
@@ -72,7 +73,8 @@ public class TurnipTalesDiscord implements WebMvcConfigurer {
                         new GiveawayCommand("giveaway"),
                         new MessageCommand("nachricht"),
                         new RolesCommand("rollen"),
-                        new StatsCommand("statistik")
+                        new StatsCommand("statistik"),
+                        new SyncPermissionCommand("synchronisieren")
                 )
                 .addEventListeners(
                         new GuildAccessListener()
@@ -93,14 +95,17 @@ public class TurnipTalesDiscord implements WebMvcConfigurer {
                         .addSubcommands(
                                 new SubcommandData("sync", "Nachrichten Vorlage für die Synchronisierung"),
                                 new SubcommandData("ticket", "Nachrichten Vorlage für Tickets"))
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(ADMINISTRATOR)),
+                        .setDefaultPermissions(enabledFor(ADMINISTRATOR)),
 
                 // only supporter, moderator, senior-moderator
                 Commands.slash("giveaway", "Lost einen Spieler anhand der Reaktionen einer Nachricht aus")
                         .addOption(STRING, "message", "Nachricht mit den Reaktionen", true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(VIEW_AUDIT_LOGS)),
+                        .setDefaultPermissions(enabledFor(VIEW_AUDIT_LOGS)),
                 Commands.slash("rollen", "Informationen zu den Rollen auf diesem Discord")
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(VIEW_AUDIT_LOGS)),
+                        .setDefaultPermissions(enabledFor(VIEW_AUDIT_LOGS)),
+                Commands.slash("synchronisieren", "Rechte eines Members synchronisieren")
+                        .addOption(USER, "member", "Discord Nutzer dessen Rechte synchronisiert werden sollen (Discord Nutzer muss sich verknüpft haben)", true)
+                        .setDefaultPermissions(enabledFor(VIEW_AUDIT_LOGS)),
 
                 // everyone
                 Commands.slash("statistik", "Deine Statistiken (nicht öffentlich) oder die eines anderen Nutzers (öffentlich)")
