@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import net.turniptales.discord.common.api.model.ConnectionDataValue;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -63,8 +64,13 @@ public class Api {
                 .onErrorResume(WebClientResponseException.class, ex -> {
                     String responseBodyAsString = ex.getResponseBodyAsString();
                     String info = parseString(responseBodyAsString).getAsJsonObject().get("info").getAsString();
-                    log.error("Request failed with code {}: {}", ex.getStatusCode(), info);
-                    return Mono.just(ResponseEntity.status(ex.getStatusCode()).body(responseBodyAsString));
+
+                    HttpStatusCode statusCode = ex.getStatusCode();
+                    if (!statusCode.is4xxClientError()) {
+                        log.error("Request failed with code {}: {}", statusCode, info);
+                    }
+
+                    return Mono.just(ResponseEntity.status(statusCode).body(responseBodyAsString));
                 })
                 .block();
     }
