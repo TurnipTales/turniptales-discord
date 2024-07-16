@@ -1,9 +1,6 @@
 package net.turniptales.discord.buttons;
 
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-
-import java.util.Objects;
 
 import static net.turniptales.discord.TurnipTalesDiscord.discordBotProperties;
 
@@ -15,9 +12,9 @@ public class TicketCloseConfirmButton extends ButtonBase {
 
     @Override
     public void onButtonClick(ButtonInteractionEvent event) {
-        TextChannel textChannel = event.getChannel().asTextChannel();
-        if (Objects.equals(textChannel.getParentCategory(), discordBotProperties.getTicketCategory()) && textChannel.getName().startsWith("ticket-")) {
-            textChannel.delete().queue();
-        }
+        String userName = event.getChannel().getName().split("-")[1];
+        discordBotProperties.getTicketCategory().getChannels().stream()
+                .filter(guildChannel -> guildChannel.getName().startsWith("ticket-") && guildChannel.getName().contains(userName))
+                .forEach(guildChannel -> guildChannel.delete().queue());
     }
 }

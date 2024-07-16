@@ -16,6 +16,7 @@ import java.util.Objects;
 import static java.util.Objects.requireNonNull;
 import static net.dv8tion.jda.api.Permission.VIEW_CHANNEL;
 import static net.dv8tion.jda.api.entities.emoji.Emoji.fromUnicode;
+import static net.dv8tion.jda.api.interactions.components.buttons.Button.secondary;
 import static net.dv8tion.jda.api.interactions.components.buttons.Button.success;
 import static net.dv8tion.jda.api.interactions.components.text.TextInputStyle.PARAGRAPH;
 import static net.dv8tion.jda.api.interactions.modals.Modal.create;
@@ -75,7 +76,7 @@ public class TicketCreateButton extends ButtonBase {
                         .sendMessage("Hey " + member.getAsMention() + "! Danke dass du ein Ticket erstellt hast. Die " + supporterRole.getAsMention() + " und " + moderatorRole.getAsMention() + " werden Dir schnellstmöglich deine Frage beantworten oder Dir helfen.\n"
                                 + "Spieler:  " + minecraftName + "\n"
                                 + "Anliegen: " + log)
-                        .addActionRow(success("closeTicket", "Ticket schließen").withEmoji(fromUnicode("U+1F512")))
+                        .addActionRow(success("btn_ticket_close", "Ticket schließen").withEmoji(fromUnicode("U+1F512")), secondary("btn_ticket_voice", "Voice-Channel erstellen").withEmoji(fromUnicode("U+1F50A")))
                         .queue(message -> event.reply("Du hast ein Ticket erstellt: " + message.getJumpUrl()).setEphemeral(true).queue()));
     }
 

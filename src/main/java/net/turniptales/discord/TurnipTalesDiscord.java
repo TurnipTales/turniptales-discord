@@ -11,6 +11,7 @@ import net.turniptales.discord.buttons.TicketCloseAbortButton;
 import net.turniptales.discord.buttons.TicketCloseButton;
 import net.turniptales.discord.buttons.TicketCloseConfirmButton;
 import net.turniptales.discord.buttons.TicketCreateButton;
+import net.turniptales.discord.buttons.TicketVoiceButton;
 import net.turniptales.discord.commands.GiveawayCommand;
 import net.turniptales.discord.commands.MessageCommand;
 import net.turniptales.discord.commands.RolesCommand;
@@ -85,7 +86,8 @@ public class TurnipTalesDiscord implements WebMvcConfigurer {
                         new TicketCloseAbortButton(),
                         new TicketCloseButton(),
                         new TicketCloseConfirmButton(),
-                        new TicketCreateButton()
+                        new TicketCreateButton(),
+                        new TicketVoiceButton()
                 )
                 .build().awaitReady();
 
