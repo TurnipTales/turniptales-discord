@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.turniptales.discord.commands.GiveawayCommand;
+import net.turniptales.discord.commands.RolesCommand;
 import net.turniptales.discord.commands.StatsCommand;
 import net.turniptales.discord.commands.SurveyCommand;
 import net.turniptales.discord.commands.TestCommand;
@@ -66,6 +67,7 @@ public class TurnipTalesDiscord implements WebMvcConfigurer {
                 .enableIntents(GUILD_MEMBERS)
                 .addEventListeners(
                         new GiveawayCommand(),
+                        new RolesCommand(),
                         new StatsCommand(),
                         new SurveyCommand(),
                         new TicketCommand(),
@@ -79,6 +81,7 @@ public class TurnipTalesDiscord implements WebMvcConfigurer {
                 .build().awaitReady();
 
         discordBotProperties.getGuild().updateCommands().addCommands(
+                Commands.slash("rollen", "Informationen zu den Rollen auf diesem Discord"),
                 Commands.slash("stats", "Deine Statistiken (nicht öffentlich) oder die eines Discord Nutzers (öffentlich)")
                         .addOption(USER, "player", "Discord Nutzer dessen Statistiken angezeigt werden sollen (Discord Nutzer muss sich verknüpft haben)", false),
                 Commands.slash("umfrage", "Erstellt eine Umfrage")
