@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
-import net.turniptales.discord.common.api.model.ConnectionDataValue;
 import org.springframework.http.ResponseEntity;
 
 import java.util.HashMap;
@@ -37,11 +36,7 @@ public class SyncButton extends ButtonBase {
             return;
         }
 
-        ResponseEntity<ConnectionDataValue> responseEntity = api.getData(user.getId());
-
-        boolean connected = responseEntity.getStatusCode().is2xxSuccessful();
-
-        if (connected) {
+        if (api.getData(user.getId()).getStatusCode().is2xxSuccessful()) {
             synchronise(event, requireNonNull(event.getMember()));
             this.lastSync.put(user, currentTimeMillis());
         } else {
