@@ -23,9 +23,6 @@ public class DiscordBotProperties {
     @Value("${discord.guild.channels.community-text-channel}")
     private String communityTextChannel;
 
-    @Value("${discord.guild.channels.survey-text-channel}")
-    private String surveyTextChannel;
-
     @Value("${discord.guild.channels.ticket-text-channel}")
     private String ticketTextChannel;
 
@@ -77,10 +74,6 @@ public class DiscordBotProperties {
 
     public TextChannel getCommunityTextChannel() {
         return getGuild().getTextChannelById(this.communityTextChannel);
-    }
-
-    public TextChannel getSurveyTextChannel() {
-        return getGuild().getTextChannelById(this.surveyTextChannel);
     }
 
     public TextChannel getTicketTextChannel() {
