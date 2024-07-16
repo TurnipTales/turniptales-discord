@@ -19,12 +19,11 @@ import java.util.StringJoiner;
 
 import static java.awt.Color.CYAN;
 import static java.lang.String.valueOf;
-import static java.lang.System.currentTimeMillis;
 import static java.util.Locale.US;
 import static java.util.Objects.nonNull;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static net.turniptales.discord.TurnipTalesDiscord.api;
 import static net.turniptales.discord.TurnipTalesDiscord.discordBot;
+import static net.turniptales.discord.common.services.UtilService.sendSelfDeletingMessage;
 
 public class StatsCommand extends CommandBase {
 
@@ -48,8 +47,7 @@ public class StatsCommand extends CommandBase {
 
         boolean isConnected = responseEntity.getStatusCode().is2xxSuccessful();
         if (!isConnected) {
-            event.reply((notSelf ? "Der Spieler hat seinen" : "Du hast deinen") + " Discord Account noch nicht mit dem Minecraft Account verknüpft.\n-# 🚮 <t:" + (currentTimeMillis() / 1000 + 10) + ":R>").setEphemeral(true).queue();
-            event.getHook().deleteOriginal().queueAfter(10, SECONDS);
+            sendSelfDeletingMessage(event, (notSelf ? "Der Spieler hat seinen" : "Du hast deinen") + " Discord Account noch nicht mit dem Minecraft Account verknüpft.");
             return;
         }
 

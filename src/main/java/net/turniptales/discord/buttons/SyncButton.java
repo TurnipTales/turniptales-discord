@@ -31,7 +31,7 @@ public class SyncButton extends ButtonBase {
     public void onButtonClick(ButtonInteractionEvent event) {
         User user = event.getUser();
         if (currentTimeMillis() - this.lastSync.getOrDefault(user, 0L) <= SECONDS.toMillis(30)) {
-            event.reply("Du hast bereits vor weniger als 30 Sekunden deine Berechtigungen synchronisiert!").setEphemeral(true).queue();
+            sendSelfDeletingMessage(event, "Du hast bereits vor weniger als 30 Sekunden deine Berechtigungen synchronisiert!");
             return;
         }
 
@@ -43,8 +43,7 @@ public class SyncButton extends ButtonBase {
 
         if (connected) {
             synchronise(responseEntity.getBody());
-            event.reply("Du hast deine Rechte synchronisiert.\n-# 🚮 <t:" + (currentTimeMillis() / 1000 + 10) + ":R>").setEphemeral(true).queue();
-            event.getHook().deleteOriginal().queueAfter(10, SECONDS);
+            sendSelfDeletingMessage(event, "Du hast deine Rechte mit dem Minecraft Account " + connectionDataValue.getMinecraftName() + " synchronisiert!");
         } else {
             event.replyModal(getVerificationModal()).queue();
         }
@@ -66,13 +65,10 @@ public class SyncButton extends ButtonBase {
         if (success) {
             ConnectionDataValue connectionDataValue = api.getData(accountUserId).getBody();
             synchronise(connectionDataValue);
-            message = "Du hast deinen Discord Account mit dem Minecraft Account " + connectionDataValue.getMinecraftName() + " verknüpft!";
+            sendSelfDeletingMessage(event, "Du hast deine Rechte mit dem Minecraft Account " + connectionDataValue.getMinecraftName() + " synchronisiert!");
         } else {
-            message = "Dein Discord Account konnte nicht mit deinem Minecraft Account verknüpft werden.";
+            sendSelfDeletingMessage(event, "Dein Discord Account konnte nicht mit deinem Minecraft Account verknüpft werden.");
         }
-
-        event.reply(message + "\n-# 🚮 <t:" + (currentTimeMillis() / 1000 + 10) + ":R>").setEphemeral(true).queue();
-        event.getHook().deleteOriginal().queueAfter(10, SECONDS);
     }
 
     private void synchronise(ConnectionDataValue connectionDataValue) {

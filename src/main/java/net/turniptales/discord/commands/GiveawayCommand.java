@@ -16,10 +16,9 @@ import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import static java.lang.System.currentTimeMillis;
 import static java.util.Objects.nonNull;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static net.dv8tion.jda.api.interactions.components.buttons.Button.success;
+import static net.turniptales.discord.common.services.UtilService.sendSelfDeletingMessage;
 
 @Log4j2
 public class GiveawayCommand extends CommandBase {
@@ -57,8 +56,7 @@ public class GiveawayCommand extends CommandBase {
                     .addActionRow(success("publishWinner", "Gewinner veröffentlichen"))
                     .queue();
         } else {
-            event.reply("Es muss eine Nachrichten ID angegeben werden.\n-# 🚮 <t:" + (currentTimeMillis() / 1000 + 10) + ":R>").setEphemeral(true).queue();
-            event.getHook().deleteOriginal().queueAfter(10, SECONDS);
+            sendSelfDeletingMessage(event, "Es muss eine Nachrichten-ID angegeben werden.");
         }
     }
 
