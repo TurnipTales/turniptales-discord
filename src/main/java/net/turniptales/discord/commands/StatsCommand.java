@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.turniptales.discord.common.api.model.ConnectionDataValue;
 import net.turniptales.discord.common.api.model.PunishmentData;
+import org.springframework.http.ResponseEntity;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -18,6 +19,7 @@ import java.util.StringJoiner;
 
 import static java.awt.Color.CYAN;
 import static java.lang.String.valueOf;
+import static java.lang.System.currentTimeMillis;
 import static java.util.Locale.US;
 import static java.util.Objects.nonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -39,24 +41,26 @@ public class StatsCommand extends CommandBase {
 
         Member member = event.getMember();
         String userId = event.getUser().getId();
-        if (nonNull(playerOptionMapping)) {
-            try {
-                ConnectionDataValue connectionDataValue = api.getData(userId);
-                MessageEmbed publicPlayerStats = isTicketChannel(event.getChannel()) ? getPrivatePlayerStats(connectionDataValue, member) : getPublicPlayerStats(connectionDataValue, member);
-                event.replyEmbeds(publicPlayerStats).queue();
-            } catch (Exception ex) {
-                event.reply("Der angegebene Spieler hat seinen Minecraft Account noch nicht verknüpft.").setEphemeral(true).queue();
-                event.getHook().deleteOriginal().queueAfter(5, SECONDS);
-            }
+
+        boolean notSelf = nonNull(playerOptionMapping);
+        String targetUserId = notSelf ? playerOptionMapping.getAsString() : userId;
+        ResponseEntity<ConnectionDataValue> responseEntity = api.getData(targetUserId);
+
+        boolean isConnected = responseEntity.getStatusCode().is2xxSuccessful();
+        if (!isConnected) {
+            event.reply((notSelf ? "Der Spieler hat seinen" : "Du hast deinen") + " Discord Account noch nicht mit dem Minecraft Account verknüpft.\n-# 🚮 <t:" + (currentTimeMillis() / 1000 + 10) + ":R>").setEphemeral(true).queue();
+            event.getHook().deleteOriginal().queueAfter(10, SECONDS);
+            return;
+        }
+
+        ConnectionDataValue targetConnectionDataValue = responseEntity.getBody();
+
+        if (notSelf) {
+            MessageEmbed publicPlayerStats = isTicketChannel(event.getChannel()) ? getPrivatePlayerStats(targetConnectionDataValue, member) : getPublicPlayerStats(targetConnectionDataValue, member);
+            event.replyEmbeds(publicPlayerStats).queue();
         } else {
-            try {
-                ConnectionDataValue connectionDataValue = api.getData(userId);
-                MessageEmbed privatePlayerStats = getPrivatePlayerStats(connectionDataValue, member);
-                event.replyEmbeds(privatePlayerStats).setEphemeral(true).queue();
-            } catch (Exception ex) {
-                event.reply("Du hast deinen Minecraft Account noch nicht verknüpft.").setEphemeral(true).queue();
-                event.getHook().deleteOriginal().queueAfter(5, SECONDS);
-            }
+            MessageEmbed privatePlayerStats = getPrivatePlayerStats(targetConnectionDataValue, member);
+            event.replyEmbeds(privatePlayerStats).setEphemeral(true).queue();
         }
     }
 

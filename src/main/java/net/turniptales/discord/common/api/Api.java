@@ -30,9 +30,14 @@ public class Api {
     /**
      * {@link ConnectionDataValue}
      */
-    public ConnectionDataValue getData(String accountUserId) {
+    public ResponseEntity<ConnectionDataValue> getData(String accountUserId) {
         String url = format("/data?discordUserId=%s", accountUserId);
-        return getGson().fromJson(sendRequest(url, GET).getBody(), ConnectionDataValue.class);
+
+        ResponseEntity<String> responseEntity = sendRequest(url, GET);
+
+        return responseEntity.getStatusCode().is2xxSuccessful()
+                ? ResponseEntity.ok(getGson().fromJson(responseEntity.getBody(), ConnectionDataValue.class))
+                : ResponseEntity.status(responseEntity.getStatusCode()).body(null);
     }
 
     public ResponseEntity<String> connect(String accountUserId, String code) {
