@@ -10,6 +10,7 @@ public class TicketCloseAbortButton extends ButtonBase {
 
     @Override
     public void onButtonClick(ButtonInteractionEvent event) {
-        event.getMessage().delete().queue();
+        String messageId = event.getMessage().getId();
+        event.getChannel().deleteMessageById(messageId).queue();
     }
 }

@@ -31,8 +31,7 @@ jobs:
       - name: Build with Maven
         run: mvn -B test package --file pom.xml
 
-      - if: github.event_name == 'push'
-        name: Upload via SCP
+      - name: Upload via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
           host: turniptales.net
@@ -44,8 +43,7 @@ jobs:
           timeout: 120s
           strip_components: 1
 
-      - if: github.event_name == 'push'
-        name: Restart TurnipTales API
+      - name: Restart TurnipTales API
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: turniptales.net
