@@ -21,37 +21,6 @@ import static net.turniptales.discord.TurnipTalesDiscord.discordBotProperties;
 public class GuildAccessListener extends ListenerAdapter {
 
     @Override
-    public void onGuildMemberJoin(GuildMemberJoinEvent e) {
-        Guild guild = e.getGuild();
-        TextChannel communityTextChannel = discordBotProperties.getCommunityTextChannel();
-        TextChannel missionControlTextChannel = guild.getSystemChannel();
-        if (nonNull(communityTextChannel) && nonNull(missionControlTextChannel)) {
-            Member member = e.getMember();
-
-            EmbedBuilder embedBuildercommunityTextChannel = new EmbedBuilder()
-                    .setColor(CYAN)
-                    .setAuthor("TurnipTales", "https://turniptales.net/", discordBot.getSelfUser().getEffectiveAvatarUrl())
-                    .setTitle("Willkommen auf TurnipTales!")
-                    .setDescription(member.getAsMention() + " hat den Server betreten.")
-                    .setFooter("Aktuelle Spieler: " + guild.getMemberCount(), member.getEffectiveAvatarUrl())
-                    .setTimestamp(new Date().toInstant());
-
-            EmbedBuilder embedBuildermissionControlTextChannel = new EmbedBuilder()
-                    .setColor(CYAN)
-                    .setAuthor("TurnipTales", "https://turniptales.net/", discordBot.getSelfUser().getEffectiveAvatarUrl())
-                    .setDescription(member.getAsMention() + " hat den Server betreten.")
-                    .setFooter("Aktuelle Spieler: " + guild.getMemberCount(), member.getEffectiveAvatarUrl())
-                    .setTimestamp(new Date().toInstant());
-
-            communityTextChannel.sendMessageEmbeds(embedBuildercommunityTextChannel.build()).queue();
-            missionControlTextChannel.sendMessageEmbeds(embedBuildermissionControlTextChannel.build()).queue();
-
-            guild.addRoleToMember(e.getUser(), discordBotProperties.getPlayerRole()).queue();
-            guild.addRoleToMember(e.getUser(), discordBotProperties.getRole0()).queue();
-        }
-    }
-
-    @Override
     public void onGuildBan(GuildBanEvent e) {
         Guild guild = e.getGuild();
         TextChannel communityTextChannel = discordBotProperties.getCommunityTextChannel();
@@ -93,6 +62,37 @@ public class GuildAccessListener extends ListenerAdapter {
                     .setTimestamp(new Date().toInstant());
 
             missionControlTextChannel.sendMessageEmbeds(embedBuilder.build()).queue();
+        }
+    }
+
+    @Override
+    public void onGuildMemberJoin(GuildMemberJoinEvent e) {
+        Guild guild = e.getGuild();
+        TextChannel communityTextChannel = discordBotProperties.getCommunityTextChannel();
+        TextChannel missionControlTextChannel = guild.getSystemChannel();
+        if (nonNull(communityTextChannel) && nonNull(missionControlTextChannel)) {
+            Member member = e.getMember();
+
+            EmbedBuilder embedBuildercommunityTextChannel = new EmbedBuilder()
+                    .setColor(CYAN)
+                    .setAuthor("TurnipTales", "https://turniptales.net/", discordBot.getSelfUser().getEffectiveAvatarUrl())
+                    .setTitle("Willkommen auf TurnipTales!")
+                    .setDescription(member.getAsMention() + " hat den Server betreten.")
+                    .setFooter("Aktuelle Spieler: " + guild.getMemberCount(), member.getEffectiveAvatarUrl())
+                    .setTimestamp(new Date().toInstant());
+
+            EmbedBuilder embedBuildermissionControlTextChannel = new EmbedBuilder()
+                    .setColor(CYAN)
+                    .setAuthor("TurnipTales", "https://turniptales.net/", discordBot.getSelfUser().getEffectiveAvatarUrl())
+                    .setDescription(member.getAsMention() + " hat den Server betreten.")
+                    .setFooter("Aktuelle Spieler: " + guild.getMemberCount(), member.getEffectiveAvatarUrl())
+                    .setTimestamp(new Date().toInstant());
+
+            communityTextChannel.sendMessageEmbeds(embedBuildercommunityTextChannel.build()).queue();
+            missionControlTextChannel.sendMessageEmbeds(embedBuildermissionControlTextChannel.build()).queue();
+
+            guild.addRoleToMember(e.getUser(), discordBotProperties.getPlayerRole()).queue();
+            guild.addRoleToMember(e.getUser(), discordBotProperties.getRole0()).queue();
         }
     }
 }
