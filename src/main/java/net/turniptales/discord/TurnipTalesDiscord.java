@@ -5,6 +5,12 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.turniptales.discord.buttons.GiveawayWinnerPublishButton;
+import net.turniptales.discord.buttons.SyncButton;
+import net.turniptales.discord.buttons.TicketCloseAbortButton;
+import net.turniptales.discord.buttons.TicketCloseButton;
+import net.turniptales.discord.buttons.TicketCloseConfirmButton;
+import net.turniptales.discord.buttons.TicketCreateButton;
 import net.turniptales.discord.commands.GiveawayCommand;
 import net.turniptales.discord.commands.RolesCommand;
 import net.turniptales.discord.commands.StatsCommand;
@@ -13,7 +19,6 @@ import net.turniptales.discord.commands.TicketCommand;
 import net.turniptales.discord.commands.VerifyCommand;
 import net.turniptales.discord.common.api.Api;
 import net.turniptales.discord.common.configuration.DiscordBotProperties;
-import net.turniptales.discord.events.ButtonInteractionListener;
 import net.turniptales.discord.events.GuildAccessListener;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -71,8 +76,15 @@ public class TurnipTalesDiscord implements WebMvcConfigurer {
                         new VerifyCommand()
                 )
                 .addEventListeners(
-                        new ButtonInteractionListener(),
                         new GuildAccessListener()
+                )
+                .addEventListeners(
+                        new GiveawayWinnerPublishButton(),
+                        new SyncButton(),
+                        new TicketCloseAbortButton(),
+                        new TicketCloseButton(),
+                        new TicketCloseConfirmButton(),
+                        new TicketCreateButton()
                 )
                 .build().awaitReady();
 
