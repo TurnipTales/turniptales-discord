@@ -2,24 +2,57 @@ name: Release
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
 
 jobs:
   release:
+
+    name: 🎉 Release TurnipTales Discord Bot
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK 17
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          distribution: 'corretto'
-          java-version: '17'
+          java-version: '21'
+          distribution: 'temurin'
           cache: maven
+
+      - name: Set application properties
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+        run: |
+          echo "discord.bot.token=$DISCORD_BOT_TOKEN" >> src/main/resources/application.properties
+
       - name: Build with Maven
-        run: mvn -B package --file pom.xml
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        run: mvn -B test package --file pom.xml
+
+      - if: github.event_name == 'push'
+        name: Upload via SCP
+        uses: appleboy/scp-action@v0.1.7
         with:
-          name: Artifacts
-          path: target/turniptales-discord.jar
+          host: turniptales.net
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: 22
+          source: "target/turniptales-discord.jar"
+          target: "/home/discord"
+          timeout: 120s
+          strip_components: 1
+
+      - if: github.event_name == 'push'
+        name: Restart TurnipTales API
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: turniptales.net
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: 22
+          script: |
+            cd /home/discord
+            chown -R root:root turniptales-discord.jar
+            ./run.sh
