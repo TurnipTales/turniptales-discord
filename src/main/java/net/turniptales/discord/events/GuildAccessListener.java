@@ -91,7 +91,7 @@ public class GuildAccessListener extends ListenerAdapter {
             communityTextChannel.sendMessageEmbeds(embedBuildercommunityTextChannel.build()).queue();
             missionControlTextChannel.sendMessageEmbeds(embedBuildermissionControlTextChannel.build()).queue();
 
-            guild.addRoleToMember(e.getUser(), discordBotProperties.getPlayerRole()).queue();
+            guild.addRoleToMember(e.getUser(), discordBotProperties.getMemberRole()).queue();
             guild.addRoleToMember(e.getUser(), discordBotProperties.getRole0()).queue();
         }
     }

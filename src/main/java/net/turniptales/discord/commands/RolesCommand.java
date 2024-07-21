@@ -13,7 +13,7 @@ public class RolesCommand extends CommandBase {
     @Override
     public void onCommand(SlashCommandInteractionEvent event) {
         event.reply("""
-                Die Standard Rolle für jedes Mitglied ist `%s`.
+                Die Standard Rolle für jedes Mitglied ist `%s`. Spieler, die mit ihrem Minecraft Account verknüpft sind, haben zusätzlich die Rolle `%s`.
 
                 Wenn man längere Zeit auf diesem Discord ist, wird einem automatisch eine Rolle zugewiesen. Je nachdem, wie lang man schon auf diesem Discord ist, erhält man eine höhere Rolle:
 
@@ -29,6 +29,7 @@ public class RolesCommand extends CommandBase {
 
                 So sieht man auch gut, wer schon lang dabei ist und sich schon gut auskennen könnte. Die Rollen werden durch den TurnipTales Bot automatisch vergeben und können dadurch nicht erstattet werden, wenn man den Server zwischenzeitlich verlässt.
                 """.formatted(
+                discordBotProperties.getMemberRole().getName(),
                 discordBotProperties.getPlayerRole().getName(),
                 discordBotProperties.getRole0().getName(),
                 discordBotProperties.getRole1Week().getName(),
