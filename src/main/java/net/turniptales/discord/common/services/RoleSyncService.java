@@ -40,9 +40,9 @@ public class RoleSyncService {
                                 log.info("Discord role synchronising: Remove role {} from member {}", role.getName(), member.getEffectiveName());
                             });
 
-                    Role playerRole = discordBotProperties.getPlayerRole();
-                    if (!member.getRoles().contains(playerRole) || !member.getRoles().contains(highestRoleUserShouldHave)) {
-                        guild.addRoleToMember(member, playerRole).queue();
+                    Role memberRole = discordBotProperties.getMemberRole();
+                    if (!member.getRoles().contains(memberRole) || !member.getRoles().contains(highestRoleUserShouldHave)) {
+                        guild.addRoleToMember(member, memberRole).queue();
                         guild.addRoleToMember(member, highestRoleUserShouldHave).queue();
                         log.info("Discord role synchronising: Add role {} to member {}", highestRoleUserShouldHave.getName(), member.getEffectiveName());
                     }

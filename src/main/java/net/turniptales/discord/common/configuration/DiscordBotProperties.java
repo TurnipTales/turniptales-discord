@@ -29,6 +29,9 @@ public class DiscordBotProperties {
     @Value("${discord.guild.categories.ticket-category}")
     private String ticketCategory;
 
+    @Value("${discord.guild.roles.member-role}")
+    private String memberRole;
+
     @Value("${discord.guild.roles.player-role}")
     private String playerRole;
 
@@ -91,6 +94,10 @@ public class DiscordBotProperties {
 
     public Category getTicketCategory() {
         return getGuild().getCategoryById(this.ticketCategory);
+    }
+
+    public Role getMemberRole() {
+        return getGuild().getRoleById(this.memberRole);
     }
 
     public Role getPlayerRole() {
